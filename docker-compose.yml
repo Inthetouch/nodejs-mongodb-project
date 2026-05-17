@@ -1,0 +1,29 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: bench-mongo
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+    command: ["--replSet", "rs0", "--bund-ip-all"]
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}) }" | mongosh --quiet
+      interval: 5s
+      timeout: 30s
+      retries: 30
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: bench-redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mongo-data:
+  redis-data:
