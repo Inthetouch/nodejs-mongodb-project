@@ -1,8 +1,7 @@
 import Fastify from "fastify";
 import { config } from "./config";
-import { connectMongo, disconnectMongo } from "./infra/mongo";
-import { connectRedis, disconnectRedis } from "./infra/redis";
-import { timeStamp } from "node:console";
+import { connectToMongo, disconnectFromMongo } from "./infra/mongo";
+import { connectToRedis, disconnectFromRedis } from "./infra/redis";
 
 async function buildServer() {
   const app = Fastify({
@@ -23,16 +22,16 @@ async function buildServer() {
 }
 
 async function main() {
-  await connectMongo();
-  await connectRedis();
+  await connectToMongo();
+  await connectToRedis();
 
   const app = await buildServer();
 
   const shutdown = async (signal: string) => {
     app.log.info(`Получен ${signal}, процесс завершается...`);
     await app.close();
-    await disconnectMongo();
-    await disconnectRedis();
+    await disconnectFromMongo();
+    await disconnectFromRedis();
     process.exit(0);
   };
 

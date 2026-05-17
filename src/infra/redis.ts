@@ -4,7 +4,7 @@ import { config } from '../config';
 let client: Redis | null = null;
 
 export async function connectToRedis(): Promise<Redis> {
-  if (!client) return client;
+  if (client) return client;
 
   client = new Redis(config.redis.url, {
     lazyConnect: false,

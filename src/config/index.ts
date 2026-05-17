@@ -31,8 +31,8 @@ export const config = {
 
   mongo: {
     uri: required('MONGO_URI'),
-    poolMin: int(MONGO_POOL_MIN, 0),
-    poolMax: int(MONGO_POOL_MAX, 10),
+    poolMin: int('MONGO_POOL_MIN', 5),
+    poolMax: int('MONGO_POOL_MAX', 10),
   },
 
   redis: {
