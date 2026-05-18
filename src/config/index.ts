@@ -43,5 +43,6 @@ export const config = {
     cacheEnabled: bool('CACHE_ENABLED', false),
     cacheTtlSeconds: int('CACHE_TTL_SECONDS', 60),
     useLean: bool('USE_LEAN', false),
+    repositoryImpl: (process.env.REPOSITORY_IMPL ?? 'mongoose') as 'mongoose' | 'native',
   },
 } as const;

@@ -27,7 +27,7 @@ export interface Product {
   _id: EntityId;
   title: string;
   description: string;
-  catregory: ProductCategory;
+  category: ProductCategory;
   price: number;
   rating: number;
   stock: number;

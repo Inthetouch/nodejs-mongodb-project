@@ -12,7 +12,8 @@
     "start": "node dist/server.js",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
-    "infra:reset": "docker compose down -v && docker compose up -d"
+    "infra:reset": "docker compose down -v && docker compose up -d",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
