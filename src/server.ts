@@ -46,6 +46,12 @@ async function buildServer() {
     return result;
   });
 
+  app.get('/test/products/:id', async (req: any) => {
+    const repos = buildRepositories();
+    const product = await repos.products.findById(req.params.id);
+    return { product };
+  });
+
   return app;
 }
 
