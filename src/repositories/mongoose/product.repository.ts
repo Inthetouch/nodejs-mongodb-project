@@ -14,7 +14,7 @@ function toDomain(doc: ProductDocument | (ProductDocument & { _id: any })): Prod
     _id: String(doc._id),
     title: doc.title,
     description: doc.description,
-    catregory: doc.catregory,
+    category: doc.category,
     price: doc.price,
     rating: doc.rating,
     stock: doc.stock,

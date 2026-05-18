@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 import { faker } from '@faker-js/faker';
-import { connectMongo, disconnectMongo } from '../infra/mongo';
+import { connectToMongo, disconnectFromMongo } from '../infra/mongo';
 import {
   UserModel,
   ProductModel,
@@ -208,7 +208,7 @@ async function seedOrders(
 }
 
 async function main() {
-  await connectMongo();
+  await connectToMongo();
 
   const totalStart = Date.now();
   const userIds = await seedUsers();
@@ -225,7 +225,7 @@ async function main() {
   };
   console.log('[seed] final counts:', stats);
 
-  await disconnectMongo();
+  await disconnectFromMongo();
   process.exit(0);
 }
 

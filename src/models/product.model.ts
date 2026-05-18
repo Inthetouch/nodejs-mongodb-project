@@ -10,7 +10,7 @@ const productSchema = new Schema<ProductDocument>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    catregory: {
+    category: {
       type: String,
       required: true,
       enum: PRODUCT_CATEGORIES as unknown as ProductCategory[],

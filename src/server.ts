@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import { config } from "./config";
 import { connectToMongo, disconnectFromMongo } from "./infra/mongo";
 import { connectToRedis, disconnectFromRedis } from "./infra/redis";
+import { buildRepositories } from "./repositories";
 
 async function buildServer() {
   const app = Fastify({

@@ -126,7 +126,7 @@ export class NativeProductRepository implements ProductRepository {
   }
 
   async deleteById(id: string): Promise<boolean> {
-    if (!ObjectId.isValid(id)) return null as any;  // explanation below
+    if (!ObjectId.isValid(id)) return false;
     const result = await this.collection.deleteOne({ _id: new ObjectId(id) });
     return result.deletedCount === 1;
   }

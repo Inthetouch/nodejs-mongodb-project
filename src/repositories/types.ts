@@ -16,7 +16,7 @@ export interface ProductFilter {
 
 export interface ProductSortOption {
   field: 'createdAt' | 'price' | 'rating';
-  order: 'asc' | 'desc';
+  direction: 'asc' | 'desc';
 }
 
 export interface ProductRepository {
@@ -49,4 +49,11 @@ export interface OrderRepository {
     pagination: PaginationOptions,
   ): Promise<{ items: Order[]; total: number }>;
   create(data: Omit<Order, '_id'>): Promise<Order>;
+}
+
+export interface UserRepository {
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
+  create(data: Omit<User, '_id' | 'ordersCount'>): Promise<User>;
+  incrementOrdersCount(userId: string): Promise<void>;
 }
