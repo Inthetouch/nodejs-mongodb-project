@@ -25,6 +25,7 @@ export interface User {
 
 export interface Product {
   _id: EntityId;
+  sku: string;
   title: string;
   description: string;
   category: ProductCategory;

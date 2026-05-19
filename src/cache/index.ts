@@ -9,24 +9,50 @@ import type { CacheService } from './types';
 import { NoOpCacheService } from './noop.cache';
 import { LruCacheService } from './lru.cache';
 import { RedisCacheService } from './redis.cache';
+import { MetricsCacheService } from '../metrics/cache';
+import type { MetricsRegistry } from '../metrics/registry';
 
 export type CacheImpl = 'none' | 'lru' | 'redis';
 
-export function buildCache(): CacheService {
+export interface BuildCacheOptions {
+  metrics?: MetricsRegistry;
+}
+
+export function buildCache(options: BuildCacheOptions = {}): CacheService {
+
+  let impl: CacheImpl;
+  let inner: CacheService;
+
   if (!config.experiment.cacheEnabled) {
-    return new NoOpCacheService();
+    impl = 'none';
+    inner = new NoOpCacheService();
+  } else {
+    impl = (process.env.CACHE_IMPL ?? 'redis') as CacheImpl;
+    switch (impl) {
+      case 'none':
+        inner = new NoOpCacheService();
+        break;
+      case 'lru':
+        inner = new LruCacheService();
+        break;
+      case 'redis':
+        inner = new RedisCacheService(getRedis());
+        break;
+      default:
+        throw new Error(`Unknown CACHE_IMPL: ${impl}`);
+    }
   }
 
-  const impl = (process.env.CACHE_IMPL ?? 'redis') as CacheImpl;
-
-  switch (impl) {
-    case 'none':
-      return new NoOpCacheService();
-    case 'lru':
-      return new LruCacheService();
-    case 'redis':
-      return new RedisCacheService(getRedis());
-    default:
-      throw new Error(`Unknown CACHE_IMPL: ${impl}`);
+  if (options.metrics) {
+    options.metrics.setCacheImpl(impl);
+    return new MetricsCacheService(inner, options.metrics, impl);
   }
+
+  return inner;
+
+}
+
+export function getCurrentCacheImpl(): CacheImpl {
+  if (!config.experiment.cacheEnabled) return 'none';
+  return (process.env.CACHE_IMPL ?? 'redis') as CacheImpl;
 }

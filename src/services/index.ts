@@ -10,6 +10,7 @@ import { OrderService } from './order.service';
 import { UserService } from './user.service';
 import { buildRepositories, type Repositories } from '../repositories';
 import { buildCache } from '../cache';
+import type { MetricsRegistry } from '../metrics/registry';
 
 export interface Services {
   products: ProductService;
@@ -17,9 +18,14 @@ export interface Services {
   users: UserService;
 }
 
-export function buildServices(repos?: Repositories): Services {
-  const repositories = repos ?? buildRepositories();
-  const cache = buildCache();
+export interface BuildServicesOptions {
+  repos?: Repositories;
+  metrics?: MetricsRegistry;
+}
+
+export function buildServices(options: BuildServicesOptions = {}): Services {
+  const repositories = options.repos ?? buildRepositories();
+  const cache = buildCache({ metrics: options.metrics });
 
   return {
     products: new ProductService(repositories.products, cache),

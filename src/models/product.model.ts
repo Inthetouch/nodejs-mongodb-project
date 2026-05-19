@@ -8,6 +8,11 @@ export interface ProductDocument extends Omit<Product, '_id'> {
 
 const productSchema = new Schema<ProductDocument>(
   {
+    sku: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     title: { type: String, required: true },
     description: { type: String, required: true },
     category: {

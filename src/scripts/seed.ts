@@ -108,11 +108,13 @@ async function seedProducts(): Promise<Array<{ id: string; title: string; price:
     const category = weighted(CATEGORY_WEIGHTS);
     const title = faker.commerce.productName();
     const price = Math.round(Math.exp(faker.number.float({ min: 2, max: 8 })) * 100) / 100;
+    const sku = `SKU-${category.slice(0, 3).toUpperCase()}-${String(i).padStart(7, '0')}`;
 
     productRefs.push({ id: id.toHexString(), title, price });
 
     batch.push({
       _id: id,
+      sku,
       title,
       description: faker.commerce.productDescription(),
       category,

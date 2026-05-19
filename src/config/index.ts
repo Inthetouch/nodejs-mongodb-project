@@ -39,10 +39,19 @@ export const config = {
     url: required('REDIS_URL'),
   },
 
+  admin: {
+    token: process.env.ADMIN_TOKEN ?? '',
+  },
+
+  metrics: {
+    enabled: bool('METRICS_ENABLED', true),
+  },
+
   experiment: {
     cacheEnabled: bool('CACHE_ENABLED', false),
     cacheTtlSeconds: int('CACHE_TTL_SECONDS', 60),
     useLean: bool('USE_LEAN', false),
     repositoryImpl: (process.env.REPOSITORY_IMPL ?? 'mongoose') as 'mongoose' | 'native',
+    initialIndexProfile: (process.env.INITIAL_INDEX_PROFILE ?? 'none') as 'none' | 'single' | 'esr' | 'text',
   },
 } as const;

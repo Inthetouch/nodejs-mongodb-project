@@ -3,12 +3,20 @@ import './server-types';
 import { config } from "./config";
 import { connectToMongo, disconnectFromMongo } from "./infra/mongo";
 import { connectToRedis, disconnectFromRedis } from "./infra/redis";
+import { MetricsRegistry } from './metrics/registry';
+import { installMongooseMetricsPlugin } from './metrics/mongo';
+import { attachHttpMetrics } from './metrics/http';
 import { buildServices } from './services';
 import { productsRoutes } from './routes/products';
 import { ordersRoutes } from './routes/orders';
 import { usersRoutes } from './routes/users';
+import { buildAdminRoutes } from './routes/admin';
+import { buildMetricsRoutes } from './routes/metrics';
+import { IndexManager } from './indexes/manager';
+import { ExplainProfiler } from './explain/profiler';
+import { getCurrentCacheImpl } from './cache';
 
-async function buildServer() {
+async function buildServer(metrics: MetricsRegistry, indexManager: IndexManager, explainProfiler: ExplainProfiler) {
   const app = Fastify({
     logger: {
       transport: config.nodeEnv === 'development' ? {
@@ -18,8 +26,15 @@ async function buildServer() {
     },
   });
 
-  const services = buildServices();
+  if (config.metrics.enabled) {
+    attachHttpMetrics(app, metrics);
+  }
+
+  const services = buildServices({ metrics: config.metrics.enabled ? metrics : undefined });
   app.decorate('services', services);
+  app.decorate('indexManager', indexManager);
+  app.decorate('metrics', metrics);
+  app.decorate('explainProfiler', explainProfiler);
 
   app.get('/health', async () => ({
     status: 'ok',
@@ -30,14 +45,35 @@ async function buildServer() {
   await app.register(ordersRoutes);
   await app.register(usersRoutes);
 
+  if (config.metrics.enabled) {
+    await app.register(buildMetricsRoutes(metrics));
+  }
+
+  await app.register(
+    buildAdminRoutes({ indexManager, metrics, explainProfiler }),
+    { prefix: '/admin' },
+  );
+
   return app;
 }
 
 async function main() {
+
+  const metrics = new MetricsRegistry();
+  if (config.metrics.enabled) {
+    installMongooseMetricsPlugin(metrics);
+  }
+
   await connectToMongo();
   await connectToRedis();
 
-  const app = await buildServer();
+  const indexManager = new IndexManager(config.experiment.initialIndexProfile);
+  const explainProfiler = new ExplainProfiler();
+
+  metrics.setIndexProfile(config.experiment.initialIndexProfile);
+  metrics.setCacheImpl(getCurrentCacheImpl());
+
+  const app = await buildServer(metrics, indexManager, explainProfiler);
 
   const shutdown = async (signal: string) => {
     app.log.info(`Получен ${signal}, процесс завершается...`);
