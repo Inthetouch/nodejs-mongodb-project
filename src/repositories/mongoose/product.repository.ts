@@ -27,7 +27,7 @@ function buildMongoFilter(filter: ProductFilter): FilterQuery<ProductDocument> {
   const query: FilterQuery<ProductDocument> = {};
 
   if (filter.category !== undefined) {
-    query.catregory = filter.category;
+    query.category = filter.category;
   }
 
   if (filter.minPrice !== undefined || filter.maxPrice !== undefined) {
