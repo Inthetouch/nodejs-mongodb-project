@@ -1,5 +1,7 @@
 import type { OrderRepository, UserRepository, OrderFilter, PaginationOptions } from '../repositories/types';
 import type { Order, OrderItem, OrderStatus } from '../models/types';
+import type { CacheService } from '../cache';
+import { config } from '../config';
 
 export interface CreateOrderInput {
   userId: string;
@@ -32,10 +34,16 @@ export class OrderService {
   constructor(
     private readonly orders: OrderRepository,
     private readonly users: UserRepository,
+    private readonly cache: CacheService,
   ) {}
 
   async getById(id: string): Promise<Order | null> {
-    return this.orders.findById(id);
+    const cacheKey = `order:v1:${id}`;
+    return this.cache.getOrLoad<Order>(
+      cacheKey,
+      config.experiment.cacheTtlSeconds,
+      () => this.orders.findById(id),
+    );
   }
 
   async list(params: ListOrdersParams): Promise<ListOrdersResult> {
@@ -85,6 +93,8 @@ export class OrderService {
       createdAt: new Date(),
     });
 
+    await this.cache.delete(`user:v1:${input.userId}`);
+    
     return created;
   }
 }

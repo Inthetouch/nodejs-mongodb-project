@@ -1,5 +1,7 @@
 import type { ProductRepository, ProductFilter, ProductSortOption, PaginationOptions } from "../repositories/types";
 import type { Product, ProductCategory } from "../models/types";
+import type { CacheService } from "../cache";
+import { config } from "../config";
 
 export interface ListProductsParams {
   category?: ProductCategory;
@@ -23,10 +25,18 @@ export interface ListProductsResult {
 }
 
 export class ProductService {
-  constructor(private readonly products: ProductRepository) {}
+  constructor(
+    private readonly products: ProductRepository,
+    private readonly cache: CacheService,
+  ) {}
 
   async getById(id: string): Promise<Product | null> {
-    return this.products.findById(id);
+    const cacheKey = `product:v1:${id}`;
+    return this.cache.getOrLoad<Product>(
+      cacheKey,
+      config.experiment.cacheTtlSeconds,
+      () => this.products.findById(id),
+    );
   }
 
   async list(params: ListProductsParams): Promise<ListProductsResult> {

@@ -1,5 +1,7 @@
 import type { UserRepository } from '../repositories/types';
 import type { User, UserStatus } from '../models/types';
+import type { CacheService } from '../cache';
+import { config } from '../config';
 
 export interface CreateUserInput {
   email: string;
@@ -9,14 +11,27 @@ export interface CreateUserInput {
 }
 
 export class UserService {
-  constructor(private readonly users: UserRepository) {}
+  constructor(
+    private readonly users: UserRepository,
+    private readonly cache: CacheService,
+  ) {}
 
   async getById(id: string): Promise<User | null> {
-    return this.users.findById(id);
+    const cacheKey = `user:v1:${id}`;
+    return this.cache.getOrLoad<User>(
+      cacheKey,
+      config.experiment.cacheTtlSeconds,
+      () => this.users.findById(id),
+    );
   }
 
   async getByEmail(email: string): Promise<User | null> {
-    return this.users.findByEmail(email);
+    const cacheKey = `user:v1:email:${email.toLowerCase()}`;
+    return this.cache.getOrLoad<User>(
+      cacheKey,
+      config.experiment.cacheTtlSeconds,
+      () => this.users.findByEmail(email),
+    );
   }
 
   async create(input: CreateUserInput): Promise<User> {

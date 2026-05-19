@@ -9,6 +9,7 @@ import { ProductService } from './product.service';
 import { OrderService } from './order.service';
 import { UserService } from './user.service';
 import { buildRepositories, type Repositories } from '../repositories';
+import { buildCache } from '../cache';
 
 export interface Services {
   products: ProductService;
@@ -18,10 +19,11 @@ export interface Services {
 
 export function buildServices(repos?: Repositories): Services {
   const repositories = repos ?? buildRepositories();
+  const cache = buildCache();
 
   return {
-    products: new ProductService(repositories.products),
-    orders: new OrderService(repositories.orders, repositories.users),
-    users: new UserService(repositories.users),
+    products: new ProductService(repositories.products, cache),
+    orders: new OrderService(repositories.orders, repositories.users, cache),
+    users: new UserService(repositories.users, cache),
   };
 }
