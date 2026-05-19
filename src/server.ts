@@ -1,10 +1,10 @@
+import { metricsSingleton } from './metrics/install';
+
 import Fastify from "fastify";
 import './server-types';
 import { config } from "./config";
 import { connectToMongo, disconnectFromMongo } from "./infra/mongo";
 import { connectToRedis, disconnectFromRedis } from "./infra/redis";
-import { MetricsRegistry } from './metrics/registry';
-import { installMongooseMetricsPlugin } from './metrics/mongo';
 import { attachHttpMetrics } from './metrics/http';
 import { buildServices } from './services';
 import { productsRoutes } from './routes/products';
@@ -15,6 +15,7 @@ import { buildMetricsRoutes } from './routes/metrics';
 import { IndexManager } from './indexes/manager';
 import { ExplainProfiler } from './explain/profiler';
 import { getCurrentCacheImpl } from './cache';
+import type { MetricsRegistry } from './metrics/registry';
 
 async function buildServer(metrics: MetricsRegistry, indexManager: IndexManager, explainProfiler: ExplainProfiler) {
   const app = Fastify({
@@ -59,10 +60,7 @@ async function buildServer(metrics: MetricsRegistry, indexManager: IndexManager,
 
 async function main() {
 
-  const metrics = new MetricsRegistry();
-  if (config.metrics.enabled) {
-    installMongooseMetricsPlugin(metrics);
-  }
+  const metrics = metricsSingleton
 
   await connectToMongo();
   await connectToRedis();

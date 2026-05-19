@@ -12,6 +12,7 @@ import { config } from '../../config';
 function toDomain(doc: ProductDocument | (ProductDocument & { _id: any })): Product {
   return {
     _id: String(doc._id),
+    sku: doc.sku, 
     title: doc.title,
     description: doc.description,
     category: doc.category,
