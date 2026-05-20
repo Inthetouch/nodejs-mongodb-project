@@ -43,6 +43,7 @@ const createOrderBodySchema = {
         additionalProperties: false,
       },
     },
+    loadTestRun: { type: 'boolean', default: false },
   },
   additionalProperties: false,
 } as const;

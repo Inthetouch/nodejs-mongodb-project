@@ -28,6 +28,7 @@ const orderSchema = new Schema<OrderDocument>(
     items: { type: [orderItemSchema], required: true },
     totalAmount: { type: Number, required: true, min: 0 },
     createdAt: { type: Date, default: () => new Date() },
+    loadTestRun: { type: Boolean, default: false, required: false },
   },
   {
     versionKey: false,

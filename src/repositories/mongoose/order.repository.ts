@@ -25,6 +25,7 @@ function toDomain(doc: OrderDocument | (OrderDocument & { _id: any })): Order {
     items: (doc.items ?? []).map(itemToDomain),
     totalAmount: doc.totalAmount,
     createdAt: doc.createdAt instanceof Date ? doc.createdAt : new Date(doc.createdAt),
+    loadTestRun: doc.loadTestRun ?? false,
   };
 }
 

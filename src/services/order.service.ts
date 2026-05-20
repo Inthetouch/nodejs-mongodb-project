@@ -11,6 +11,7 @@ export interface CreateOrderInput {
     quantity: number;
     pricePerUnit: number;
   }>;
+  loadTestRun?: boolean;
 }
 
 export interface ListOrdersParams {
@@ -91,6 +92,7 @@ export class OrderService {
       items,
       totalAmount: roundedTotal,
       createdAt: new Date(),
+      loadTestRun: input.loadTestRun ?? false,
     });
 
     await this.cache.delete(`user:v1:${input.userId}`);

@@ -50,4 +50,5 @@ export interface Order {
   items: OrderItem[];
   totalAmount: number;
   createdAt: Date;
+  loadTestRun?: boolean;
 }

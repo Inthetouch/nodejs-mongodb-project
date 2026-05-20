@@ -4,6 +4,7 @@ import { buildAdminIndexesRoutes } from './indexes';
 import { buildAdminExplainRoutes } from './explain';
 import { buildAdminStatsRoutes } from './stats';
 import { adminCacheRoutes } from './cache';
+import { adminCleanupRoutes } from './cleanup';
 import type { IndexManager } from '../../indexes/manager';
 import type { MetricsRegistry } from '../../metrics/registry';
 import type { ExplainProfiler } from '../../explain/profiler';
@@ -27,5 +28,6 @@ export function buildAdminRoutes(deps: AdminDeps): FastifyPluginAsync {
     await app.register(buildAdminExplainRoutes(deps.explainProfiler));
     await app.register(buildAdminStatsRoutes(deps.indexManager, deps.metrics));
     await app.register(adminCacheRoutes);
+    await app.register(adminCleanupRoutes);
   };
 }
