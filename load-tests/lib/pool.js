@@ -19,4 +19,8 @@ export function pickSearchTerm() {
   return pick(poolData.searchTerms);
 }
 
+export function pickListFilter() {
+  return pick(poolData.listFilters);
+}
+
 export { poolData };

@@ -25,6 +25,9 @@ function warmupDuration(spec: RunSpec): string {
   if (spec.scenario === 'read-heavy.js' && !spec.cacheEnabled && spec.indexProfile === 'none') {
     return '30s';
   }
+  if (spec.scenario === 'read-list-heavy.js' && !spec.cacheEnabled && spec.indexProfile === 'none') {
+    return '60s';
+  }
   if (spec.scenario === 'mixed.js') return '20s';
   if (spec.scenario === 'write-heavy.js') return '15s';
   if (spec.scenario === 'search-heavy.js') return '15s';
@@ -36,6 +39,9 @@ const MATRIX: RunSpec[] = [
   { id: 'read_none_off',    scenario: 'read-heavy.js',   indexProfile: 'none',   cacheImpl: 'none', cacheEnabled: false },
   { id: 'read_single_off',  scenario: 'read-heavy.js',   indexProfile: 'single', cacheImpl: 'none', cacheEnabled: false },
   { id: 'read_esr_off',     scenario: 'read-heavy.js',   indexProfile: 'esr',    cacheImpl: 'none', cacheEnabled: false },
+  { id: 'read_list_none_off',   scenario: 'read-list-heavy.js', indexProfile: 'none',   cacheImpl: 'none', cacheEnabled: false },
+  { id: 'read_list_single_off', scenario: 'read-list-heavy.js', indexProfile: 'single', cacheImpl: 'none', cacheEnabled: false },
+  { id: 'read_list_esr_off',    scenario: 'read-list-heavy.js', indexProfile: 'esr',    cacheImpl: 'none', cacheEnabled: false },
   // Search без кэша.
   { id: 'search_text_off',  scenario: 'search-heavy.js', indexProfile: 'text',   cacheImpl: 'none', cacheEnabled: false, vus: '30' },
   // Mixed без кэша.
@@ -46,6 +52,7 @@ const MATRIX: RunSpec[] = [
   // ========== ГРУППА REDIS (CACHE_ENABLED=true, CACHE_IMPL=redis) — 9 прогонов ==========
   { id: 'read_esr_redis',   scenario: 'read-heavy.js',   indexProfile: 'esr',    cacheImpl: 'redis', cacheEnabled: true },
   { id: 'read_none_redis',  scenario: 'read-heavy.js',   indexProfile: 'none',   cacheImpl: 'redis', cacheEnabled: true },
+  { id: 'read_list_esr_redis',  scenario: 'read-list-heavy.js', indexProfile: 'esr',    cacheImpl: 'redis', cacheEnabled: true },
   { id: 'search_text_redis',scenario: 'search-heavy.js', indexProfile: 'text',   cacheImpl: 'redis', cacheEnabled: true, vus: '30' },
   { id: 'mixed_none_redis', scenario: 'mixed.js',        indexProfile: 'none',   cacheImpl: 'redis', cacheEnabled: true },
   { id: 'mixed_single_redis',scenario:'mixed.js',        indexProfile: 'single', cacheImpl: 'redis', cacheEnabled: true },

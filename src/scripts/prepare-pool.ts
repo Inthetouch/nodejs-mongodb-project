@@ -59,6 +59,29 @@ async function main() {
   }
   console.log(`[pool] пользователей: ${users.length}`);
 
+  const categories = [
+    'electronics', 'clothing', 'books', 'home', 'sports',
+    'beauty', 'food', 'toys', 'auto', 'other',
+  ];
+
+  const priceRanges = [
+    { min: 10,  max: 100 },
+    { min: 50,  max: 500 },
+    { min: 100, max: 1000 },
+  ];
+
+  const listFilters: Array<{category: string; minPrice: number; maxPrice: number}> = [];
+  for (const category of categories) {
+    for (const range of priceRanges) {
+      listFilters.push({
+        category,
+        minPrice: range.min,
+        maxPrice: range.max,
+      });
+    }
+  }
+  console.log(`[pool] list-фильтров: ${listFilters.length}`);
+
   const pool = {
     generatedAt: new Date().toISOString(),
     sourceCounts: {
@@ -69,6 +92,7 @@ async function main() {
     coldProducts,
     users,
     searchTerms: POOL_CONFIG.searchTerms,
+    listFilters,
   };
 
   const outDir = path.resolve(process.cwd(), 'load-tests');
