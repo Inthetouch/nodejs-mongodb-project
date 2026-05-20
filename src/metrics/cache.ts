@@ -55,7 +55,7 @@ export class MetricsCacheService implements CacheService {
     loader: () => Promise<T | null>,
   ): Promise<T | null> {
     const keyPrefix = extractKeyPrefix(key);
-    const cached = await this.get<T>(key);
+    const cached = await this.inner.get<T>(key);
     if (cached !== null) {
       this.metrics.cacheHitsTotal.inc({
         cache_impl: this.implName,
@@ -67,10 +67,7 @@ export class MetricsCacheService implements CacheService {
       cache_impl: this.implName,
       key_prefix: keyPrefix,
     });
-    const value = await loader();
-    if (value !== null) {
-      await this.set(key, value, ttlSeconds);
-    }
-    return value;
+
+    return this.inner.getOrLoad<T>(key, ttlSeconds, loader);
   }
 }
