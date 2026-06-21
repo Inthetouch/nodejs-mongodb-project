@@ -1,4 +1,4 @@
-/* Смена тем */
+/* ========== Переменные тем ========== */
 :root {
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', monospace;
@@ -15,7 +15,7 @@
   --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Тёмная тема */
+/* Тёмная тема (по умолчанию, как Grafana) */
 [data-theme="dark"] {
   --bg-primary: #0b0f1a;
   --bg-secondary: #11151f;
@@ -50,12 +50,13 @@
   --bg-hover: #eef1f6;
   --bg-input: #ffffff;
 
-  --border-primary: #e2e6ec;
-  --border-secondary: #cbd5e1;
+  --border-primary: #d8dde5;
+  --border-secondary: #b6bfca;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-tertiary: #94a3b8;
+  /* Более контрастные оттенки для читаемости на белом фоне */
+  --text-primary: #0f172a;     /* почти чёрный */
+  --text-secondary: #334155;   /* было #475569 — слишком бледно */
+  --text-tertiary: #64748b;    /* было #94a3b8 — сливалось с фоном */
   --text-inverse: #ffffff;
 
   --accent-primary: #2563eb;
@@ -65,11 +66,11 @@
   --accent-danger: #dc2626;
   --accent-purple: #7c3aed;
 
-  --chart-grid: rgba(71, 85, 105, 0.1);
-  --chart-text: #475569;
+  --chart-grid: rgba(71, 85, 105, 0.12);
+  --chart-text: #334155;
 }
 
-/* База */
+/* ========== База ========== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -93,7 +94,7 @@ body {
 a { color: var(--accent-primary); text-decoration: none; transition: color var(--transition); }
 a:hover { color: var(--accent-primary-hover); }
 
-/* Шапка */
+/* ========== Шапка ========== */
 .app-header {
   position: sticky;
   top: 0;
@@ -198,7 +199,7 @@ a:hover { color: var(--accent-primary-hover); }
 [data-theme="light"] .theme-icon-sun { display: none; }
 [data-theme="light"] .theme-icon-moon { display: block; }
 
-/* Основное содержимое */
+/* ========== Основное содержимое ========== */
 .main-content {
   padding-top: 40px;
   padding-bottom: 80px;
@@ -227,7 +228,7 @@ a:hover { color: var(--accent-primary-hover); }
   max-width: 720px;
 }
 
-/* Hero блок */
+/* ========== Hero блок ========== */
 .hero {
   text-align: center;
   padding: 32px 0 56px;
@@ -299,7 +300,7 @@ a:hover { color: var(--accent-primary-hover); }
   border-color: var(--border-secondary);
 }
 
-/* KPI карточки */
+/* ========== KPI карточки ========== */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -360,7 +361,7 @@ a:hover { color: var(--accent-primary-hover); }
   line-height: 1.4;
 }
 
-/* Сводка */
+/* ========== Сводка ========== */
 .overview-summary {
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
@@ -376,7 +377,7 @@ a:hover { color: var(--accent-primary-hover); }
 
 .overview-text strong { color: var(--text-primary); }
 
-/* Фильтры */
+/* ========== Фильтры ========== */
 .filters {
   display: flex;
   gap: 16px;
@@ -420,7 +421,7 @@ a:hover { color: var(--accent-primary-hover); }
   border-color: var(--accent-primary);
 }
 
-/* Таблица */
+/* ========== Таблица ========== */
 .table-wrapper {
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
@@ -486,7 +487,7 @@ a:hover { color: var(--accent-primary-hover); }
 .badge-accent { color: var(--accent-purple); border-color: var(--accent-purple); background: transparent; }
 .badge-muted { color: var(--text-tertiary); }
 
-/* Графики */
+/* ========== Графики ========== */
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
@@ -524,7 +525,7 @@ a:hover { color: var(--accent-primary-hover); }
   height: 320px;
 }
 
-/* Защита от лавины */
+/* ========== Защита от лавины ========== */
 .stampede-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -563,7 +564,7 @@ a:hover { color: var(--accent-primary-hover); }
   color: var(--text-secondary);
 }
 
-/* Код */
+/* ========== Код ========== */
 .code-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
@@ -604,7 +605,7 @@ a:hover { color: var(--accent-primary-hover); }
 
 .code-comment { color: var(--text-tertiary); }
 
-/* Методология */
+/* ========== Методология ========== */
 .method-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -653,7 +654,7 @@ a:hover { color: var(--accent-primary-hover); }
 
 .method-list strong { color: var(--text-primary); font-weight: 500; }
 
-/* Ссылки */
+/* ========== Ссылки ========== */
 .links-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-primary);
@@ -699,7 +700,7 @@ a:hover { color: var(--accent-primary-hover); }
   color: var(--text-tertiary);
 }
 
-/* Подвал */
+/* ========== Подвал ========== */
 .app-footer {
   border-top: 1px solid var(--border-primary);
   background: var(--bg-secondary);
@@ -717,7 +718,7 @@ a:hover { color: var(--accent-primary-hover); }
   gap: 12px;
 }
 
-/* Мобильные */
+/* ========== Мобильные ========== */
 @media (max-width: 880px) {
   .header-inner { flex-wrap: wrap; gap: 16px; }
   .nav { order: 3; width: 100%; overflow-x: auto; }

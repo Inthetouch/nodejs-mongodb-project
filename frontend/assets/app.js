@@ -1,4 +1,4 @@
-// Состояние приложения
+// ====== Состояние приложения ======
 const state = {
   meta: null,
   runs: [],
@@ -15,7 +15,7 @@ function handleHashNavigation() {
   if (link) link.click();
 }
 
-// Утилиты 
+// ====== Утилиты ======
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 
@@ -43,9 +43,9 @@ const getThemeColors = () => {
   };
 };
 
-// Тема
+// ====== Тема ======
 function initTheme() {
-  const saved = localStorage.getItem('theme') || 'dark';
+  const saved = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', saved);
 
   $('#themeToggle').addEventListener('click', () => {
@@ -61,7 +61,7 @@ function initTheme() {
   });
 }
 
-// Навигация 
+// ====== Навигация ======
 function initNav() {
   $$('.nav-link').forEach((link) => {
     link.addEventListener('click', (e) => {
@@ -81,7 +81,7 @@ function initNav() {
   });
 }
 
-// Загрузка данных
+// ====== Загрузка данных ======
 async function loadData() {
   try {
     const res = await fetch('data/runs.json');
@@ -114,7 +114,7 @@ async function loadData() {
   }
 }
 
-// Фильтры
+// ====== Фильтры ======
 function populateFilters() {
   const scenarios = [...new Set(state.runs.map((r) => r.scenarioLabel))];
   const indexes = [...new Set(state.runs.map((r) => r.indexLabel))];
@@ -156,7 +156,7 @@ function applyFilters() {
   renderTable();
 }
 
-// Таблица
+// ====== Таблица ======
 function renderTable() {
   const body = $('#runsTableBody');
   if (state.filteredRuns.length === 0) {
@@ -190,7 +190,7 @@ function renderTable() {
     .join('');
 }
 
-// Графики
+// ====== Графики ======
 function chartCommonOptions(colors) {
   return {
     responsive: true,
@@ -341,64 +341,183 @@ function renderChartRps() {
   });
 }
 
+// График 3: Эффект индекса на списках.
+// Показываем в правильном порядке «от худшего к лучшему» — видна история улучшения
 function renderChartEsr() {
   if (!window.Chart) return;
   const colors = getThemeColors();
   const ctx = $('#chartEsr');
   if (!ctx) return;
 
-  // Сравниваем индексные профили на одном сценарии — списки
-  const listRuns = state.runs.filter((r) => r.scenario.includes('list'));
-  if (listRuns.length === 0) {
-    // Fallback: если нет list-runs, используем общую картину
-    const fallback = state.runs.filter((r) => !r.cacheEnabled);
-    if (fallback.length > 0) {
-      drawComparisonChart(ctx, fallback, 'p50', colors, 'Время ответа p50, мс');
-      return;
-    }
-    return;
+  // Ищем конкретные прогоны в правильном порядке эволюции
+  const findRun = (id) => state.runs.find((r) => r.id === id);
+  const noneRun = findRun('read_list_none_off');
+  const singleRun = findRun('read_list_single_off');
+  const esrRun = findRun('read_list_esr_off');
+  const esrRedisRun = findRun('read_list_esr_redis');
+
+  if (!noneRun || !singleRun || !esrRun) return;
+
+  // Собираем данные в порядке улучшения. Без индексов — база. Делим на неё остальные.
+  const baseline = noneRun.metrics.p50;
+  const data = [
+    { label: 'Без индексов', value: noneRun.metrics.p50, color: colors.danger, speedup: 'база' },
+    { label: 'Простые индексы', value: singleRun.metrics.p50, color: colors.warning, speedup: `быстрее в ${(baseline / singleRun.metrics.p50).toFixed(1)}×` },
+    { label: 'ESR-индексы', value: esrRun.metrics.p50, color: colors.success, speedup: `быстрее в ${(baseline / esrRun.metrics.p50).toFixed(1)}×` },
+  ];
+  if (esrRedisRun) {
+    data.push({ label: 'ESR + Redis', value: esrRedisRun.metrics.p50, color: colors.primary, speedup: `быстрее в ${(baseline / esrRedisRun.metrics.p50).toFixed(1)}×` });
   }
 
-  drawComparisonChart(ctx, listRuns, 'p50', colors, 'Время ответа p50, мс');
+  state.charts.esr = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map((d) => d.label),
+      datasets: [{
+        label: 'Время ответа p50, мс',
+        data: data.map((d) => d.value),
+        backgroundColor: data.map((d) => d.color + 'cc'),
+        borderColor: data.map((d) => d.color),
+        borderWidth: 1,
+        borderRadius: 6,
+      }],
+    },
+    options: {
+      ...chartCommonOptions(colors),
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            label: (item) => {
+              const d = data[item.dataIndex];
+              return [`${d.value} мс`, d.speedup];
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: colors.grid },
+          ticks: { color: colors.text, font: { size: 13, weight: '500' } },
+        },
+        y: {
+          grid: { color: colors.grid },
+          ticks: { color: colors.text, font: { size: 12 } },
+          title: {
+            display: true,
+            text: 'Время ответа p50, мс',
+            color: colors.text,
+            font: { size: 12 },
+          },
+        },
+      },
+    },
+  });
 }
 
+// График 4: Эффект кэша на чтении по ID.
+// Группированные столбцы по профилям индекса, пары «с кэшем / без» рядом.
 function renderChartRedis() {
   if (!window.Chart) return;
   const colors = getThemeColors();
   const ctx = $('#chartRedis');
   if (!ctx) return;
 
-  // Сравниваем варианты с кэшем и без на одном сценарии (read-heavy = чтение по ID)
-  const readRuns = state.runs.filter((r) => r.scenario.includes('read-heavy') && !r.scenario.includes('list'));
-  if (readRuns.length === 0) {
-    drawComparisonChart(ctx, state.runs, 'p50', colors, 'Время ответа p50, мс');
-    return;
-  }
+  const findRun = (id) => state.runs.find((r) => r.id === id);
+  const groups = [
+    {
+      profile: 'Без индексов',
+      off: findRun('read_none_off'),
+      redis: findRun('read_none_redis'),
+    },
+    {
+      profile: 'Простые индексы',
+      off: findRun('read_single_off'),
+      redis: null,
+    },
+    {
+      profile: 'ESR-индексы',
+      off: findRun('read_esr_off'),
+      redis: findRun('read_esr_redis'),
+      lru: findRun('read_esr_lru'),
+    },
+  ];
 
-  drawComparisonChart(ctx, readRuns, 'p50', colors, 'Время ответа p50, мс');
-}
+  const labels = groups.map((g) => g.profile);
+  const offValues = groups.map((g) => g.off?.metrics.p50 ?? null);
+  const redisValues = groups.map((g) => g.redis?.metrics.p50 ?? null);
+  const lruValues = groups.map((g) => g.lru?.metrics.p50 ?? null);
 
-function drawComparisonChart(ctx, runs, metric, colors, label) {
-  const data = runs.map((r) => ({
-    label: `${r.indexLabel}${r.cacheEnabled ? ' + Redis' : ''}`,
-    value: r.metrics[metric],
-  }));
-
-  const chartKey = ctx.id;
-  state.charts[chartKey] = new Chart(ctx, {
+  state.charts.redis = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: data.map((d) => d.label),
-      datasets: [{
-        label,
-        data: data.map((d) => d.value),
-        backgroundColor: [colors.danger, colors.warning, colors.success, colors.primary].map((c) => c + 'cc'),
-        borderColor: [colors.danger, colors.warning, colors.success, colors.primary],
-        borderWidth: 1,
-        borderRadius: 4,
-      }],
+      labels,
+      datasets: [
+        {
+          label: 'Без кэша',
+          data: offValues,
+          backgroundColor: colors.warning + 'cc',
+          borderColor: colors.warning,
+          borderWidth: 1,
+          borderRadius: 6,
+        },
+        {
+          label: 'С Redis',
+          data: redisValues,
+          backgroundColor: colors.primary + 'cc',
+          borderColor: colors.primary,
+          borderWidth: 1,
+          borderRadius: 6,
+        },
+        {
+          label: 'С LRU (в памяти)',
+          data: lruValues,
+          backgroundColor: colors.success + 'cc',
+          borderColor: colors.success,
+          borderWidth: 1,
+          borderRadius: 6,
+        },
+      ],
     },
-    options: chartCommonOptions(colors),
+    options: {
+      ...chartCommonOptions(colors),
+      plugins: {
+        legend: {
+          labels: { color: colors.text, font: { size: 12 } },
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            label: (item) => item.parsed.y !== null ? `${item.dataset.label}: ${item.parsed.y} мс` : null,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: colors.grid },
+          ticks: { color: colors.text, font: { size: 13, weight: '500' } },
+        },
+        y: {
+          grid: { color: colors.grid },
+          ticks: { color: colors.text, font: { size: 12 } },
+          title: {
+            display: true,
+            text: 'Время ответа p50, мс',
+            color: colors.text,
+            font: { size: 12 },
+          },
+        },
+      },
+    },
   });
 }
 
@@ -410,7 +529,7 @@ function renderAllCharts() {
   renderChartRedis();
 }
 
-// Обновление блока single-flight из реальных данных
+// ====== Обновление блока single-flight из реальных данных ======
 function renderStampede() {
   if (!state.stampede) return;
   const sm = state.stampede.stampedeMetrics;
@@ -428,7 +547,7 @@ function renderStampede() {
   set('[data-stampede="efficiency"]', sm.efficiencyPercent + '%');
 }
 
-// Обновление метаданных среды
+// ====== Обновление метаданных среды ======
 function renderMeta() {
   if (!state.meta) return;
   const env = state.meta.environment || {};
@@ -445,12 +564,15 @@ function renderMeta() {
   set('[data-meta="totalRuns"]', state.meta.totalRuns);
 }
 
-// KPI обновление из данных
+// ====== KPI обновление из данных ======
 function updateKpis() {
   if (state.runs.length === 0) return;
+
+  // Здесь можно динамически обновлять числа из данных
+  // Пока оставляем статические значения из ВКР, они корректнее любых расчётов из частичных данных
 }
 
-// Запуск
+// ====== Запуск ======
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initNav();

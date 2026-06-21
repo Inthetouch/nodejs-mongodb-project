@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,19 +14,13 @@
 <!-- Шапка -->
 <header class="app-header">
   <div class="container header-inner">
-    <div class="brand">
-      <div class="brand-logo">NM</div>
-      <div class="brand-text">
-        <div class="brand-title">Node.js × MongoDB</div>
-        <div class="brand-subtitle">Дашборд экспериментов · ВКР Еремеев Н.А.</div>
-      </div>
-    </div>
+<!-- бренд-блок убран по запросу пользователя -->
     <nav class="nav">
       <a href="#overview" class="nav-link active" data-section="overview">Обзор</a>
       <a href="#experiments" class="nav-link" data-section="experiments">Эксперименты</a>
       <a href="#charts" class="nav-link" data-section="charts">Графики</a>
       <a href="#stampede" class="nav-link" data-section="stampede">Защита от лавины</a>
-      <a href="#methodology" class="nav-link" data-section="methodology">Методология</a>
+      <a href="#methodology" class="nav-link" data-section="methodology">Параметры эксперимента</a>
     </nav>
     <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
       <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -95,15 +89,7 @@
       </article>
     </div>
 
-    <div class="overview-summary">
-      <h2 class="section-title">Главный вывод</h2>
-      <p class="overview-text">
-        Индексы и кэш — <strong>не конкуренты, а дополняющие друг друга решения</strong>.
-        Индексы ускоряют сложные запросы с фильтрами в <strong>9 раз</strong>.
-        Кэш ускоряет простые точечные запросы в <strong>4 раза</strong>.
-        Вместе они дают системе предсказуемую скорость на любом типе нагрузки.
-      </p>
-    </div>
+<!-- блок Главный вывод убран по запросу -->
   </section>
 
   <!-- ЭКСПЕРИМЕНТЫ -->
@@ -179,14 +165,14 @@
       </div>
 
       <div class="chart-card chart-card-wide">
-        <h3 class="chart-title">Эффект ESR-индекса на списках</h3>
-        <p class="chart-desc">9-кратное ускорение от правильно настроенного индекса</p>
+        <h3 class="chart-title">Эволюция скорости: списки товаров</h3>
+        <p class="chart-desc">Слева направо — как постепенное улучшение настроек базы ускоряет запрос с фильтрами. Базовый вариант — 606,9 мс, лучший — 65,9 мс.</p>
         <div class="chart-container"><canvas id="chartEsr"></canvas></div>
       </div>
 
       <div class="chart-card chart-card-wide">
-        <h3 class="chart-title">Эффект Redis-кэша на чтении по ID</h3>
-        <p class="chart-desc">4-кратное ускорение от добавления Redis в цепочку</p>
+        <h3 class="chart-title">Кэш против базы: чтение по ID</h3>
+        <p class="chart-desc">Пары рядом показывают: при любом индексе кэш даёт одинаковый выигрыш — около 4×. Индексы не работают на этом типе запросов.</p>
         <div class="chart-container"><canvas id="chartRedis"></canvas></div>
       </div>
     </div>
@@ -262,9 +248,9 @@ async getOrLoad&lt;T&gt;(key: string, ttlSeconds: number, loader: () =&gt; Promi
     </div>
   </section>
 
-  <!-- МЕТОДОЛОГИЯ -->
+  <!-- ПАРАМЕТРЫ ЭКСПЕРИМЕНТА -->
   <section id="methodology" class="section">
-    <h2 class="section-title">Методология</h2>
+    <h2 class="section-title">Параметры эксперимента</h2>
 
     <div class="method-grid">
       <div class="method-card">
@@ -328,32 +314,6 @@ async getOrLoad&lt;T&gt;(key: string, ttlSeconds: number, loader: () =&gt; Promi
       </div>
     </div>
 
-    <div class="links-card">
-      <h3 class="method-title">Ссылки</h3>
-      <div class="links-grid">
-        <a href="https://github.com/Inthetouch/nodejs-mongodb-project" class="link-card" target="_blank">
-          <div class="link-icon">📦</div>
-          <div class="link-text">
-            <div class="link-title">Репозиторий</div>
-            <div class="link-desc">Исходный код стенда</div>
-          </div>
-        </a>
-        <a href="#" class="link-card">
-          <div class="link-icon">📄</div>
-          <div class="link-text">
-            <div class="link-title">ВКР (PDF)</div>
-            <div class="link-desc">Полный текст исследования</div>
-          </div>
-        </a>
-        <a href="#" class="link-card">
-          <div class="link-icon">🎥</div>
-          <div class="link-text">
-            <div class="link-title">Видеодемо</div>
-            <div class="link-desc">Скрин-каст работы стенда</div>
-          </div>
-        </a>
-      </div>
-    </div>
   </section>
 
 </main>
@@ -361,7 +321,6 @@ async getOrLoad&lt;T&gt;(key: string, ttlSeconds: number, loader: () =&gt; Promi
 <footer class="app-footer">
   <div class="container footer-inner">
     <div>© 2026 Еремеев Н.А., группа МИСТ-24-3-4 · НИТУ МИСИС</div>
-    <div>Магистерская ВКР · Веб-разработка</div>
   </div>
 </footer>
 
