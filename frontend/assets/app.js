@@ -7,12 +7,11 @@ const state = {
   stampede: null,
 };
 
-// Переход по якорю в URL при загрузке
+// Переход по якорю в URL при загрузке или при history.back/forward
 function handleHashNavigation() {
   const hash = window.location.hash.replace('#', '');
   if (!hash) return;
-  const link = document.querySelector(`.nav-link[data-section="${hash}"]`);
-  if (link) link.click();
+  switchSection(hash);
 }
 
 // ====== Утилиты ======
@@ -62,22 +61,36 @@ function initTheme() {
 }
 
 // ====== Навигация ======
+// Общая функция переключения секции — находит секцию по id, делает её активной,
+// подсвечивает соответствующий nav-link.
+// Используется и по клику на меню, и по клику на кнопки «К результатам» и т.п.
+function switchSection(target) {
+  if (!target) return;
+  const section = document.getElementById(target);
+  if (!section || !section.classList.contains('section')) return;
+
+  $$('.nav-link').forEach((l) => l.classList.toggle('active', l.dataset.section === target));
+  $$('.section').forEach((s) => s.classList.toggle('active', s.id === target));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function initNav() {
-  $$('.nav-link').forEach((link) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = link.dataset.section;
+  // Делегированный клик-обработчик: ловим любую ссылку вида href="#xxx",
+  // где xxx соответствует id секции. Это покрывает и .nav-link, и .btn (кнопку «К результатам»).
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    const target = href.slice(1); // убираем '#'
+    const section = document.getElementById(target);
+    if (!section || !section.classList.contains('section')) return;
 
-      $$('.nav-link').forEach((l) => l.classList.toggle('active', l.dataset.section === target));
-      $$('.section').forEach((s) => s.classList.toggle('active', s.id === target));
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      // Графики рисуем только когда секция стала видимой
-      if (target === 'charts' && Object.keys(state.charts).length === 0) {
-        setTimeout(renderAllCharts, 100);
-      }
-    });
+    e.preventDefault();
+    switchSection(target);
+    // Обновляем hash в URL — чтобы работали кнопки «назад/вперёд» и прямые ссылки
+    if (window.location.hash !== href) {
+      history.pushState(null, '', href);
+    }
   });
 }
 

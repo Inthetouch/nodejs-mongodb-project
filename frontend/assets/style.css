@@ -716,11 +716,26 @@ a:hover { color: var(--accent-primary-hover); }
 .code-comment { color: var(--text-tertiary); }
 
 /* ========== Методология ========== */
+/* CSS Grid для «Параметры эксперимента». Используем явные брейкпоинты,
+   чтобы гарантировать предсказуемую раскладку в любом месте и избежать ловушек
+   с auto-fit при узком контейнере. */
 .method-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;  /* Мобильный — 1 колонка */
+  gap: 20px;
   margin-bottom: 32px;
+}
+
+@media (min-width: 720px) {
+  .method-grid {
+    grid-template-columns: 1fr 1fr;  /* Планшет — 2 колонки */
+  }
+}
+
+@media (min-width: 1100px) {
+  .method-grid {
+    grid-template-columns: repeat(3, 1fr);  /* Десктоп — 3 колонки */
+  }
 }
 
 .method-card {
@@ -728,13 +743,34 @@ a:hover { color: var(--accent-primary-hover); }
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   padding: 24px;
+  transition: transform var(--transition), box-shadow var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.method-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent-primary);
+  opacity: 0.85;
+}
+
+.method-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .method-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
 .method-list {
