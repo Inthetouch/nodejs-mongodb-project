@@ -118,7 +118,7 @@ a:hover { color: var(--accent-primary-hover); }
 .header-inner {
   display: flex;
   align-items: center;
-  gap: 32px;
+  justify-content: center;
   padding-top: 14px;
   padding-bottom: 14px;
 }
@@ -161,7 +161,6 @@ a:hover { color: var(--accent-primary-hover); }
 .nav {
   display: flex;
   gap: 4px;
-  flex-grow: 1;
 }
 
 .nav-link {
