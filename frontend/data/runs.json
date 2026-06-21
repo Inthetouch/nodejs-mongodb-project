@@ -1,0 +1,666 @@
+{
+  "meta": {
+    "totalRuns": 22,
+    "generated": "2026-06-21",
+    "environment": {
+      "cpu": "Intel Core i7-12700KF (20 потоков)",
+      "ram": "16 ГБ DDR4",
+      "os": "Linux 6.18 (WSL2)",
+      "docker": "Docker 29.4.3 + Docker Compose 5.1.4",
+      "node": "Node.js 25.9.0",
+      "mongo": "MongoDB 7.0.34"
+    },
+    "dataset": {
+      "products": 200000,
+      "users": 50000,
+      "orders": 100000
+    }
+  },
+  "runs": [
+    {
+      "id": "mixed_esr_off",
+      "scenario": "mixed.js",
+      "scenarioLabel": "Смешанная (95% read / 5% write)",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 11.15,
+        "p90": 16.25,
+        "p95": 19.61,
+        "avg": 12.16,
+        "min": 0.01,
+        "max": 133.37,
+        "rps": 4285.7,
+        "iterations": 163258,
+        "requests": 163258,
+        "failedRate": 0,
+        "durationMs": 38093
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 155182,
+        "hitRate": 0,
+        "mongoQueries": 179410
+      }
+    },
+    {
+      "id": "mixed_esr_redis",
+      "scenario": "mixed.js",
+      "scenarioLabel": "Смешанная (95% read / 5% write)",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 4.51,
+        "p90": 6.76,
+        "p95": 11.75,
+        "avg": 5.19,
+        "min": -1466.76,
+        "max": 49.92,
+        "rps": 9920.5,
+        "iterations": 377416,
+        "requests": 377416,
+        "failedRate": 0,
+        "durationMs": 38044
+      },
+      "cache": {
+        "hits": 358544,
+        "misses": 35,
+        "hitRate": 0.9999,
+        "mongoQueries": 56546
+      }
+    },
+    {
+      "id": "mixed_none_off",
+      "scenario": "mixed.js",
+      "scenarioLabel": "Смешанная (95% read / 5% write)",
+      "indexProfile": "none",
+      "indexLabel": "Без индексов",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 11.66,
+        "p90": 16.98,
+        "p95": 20.15,
+        "avg": 12.67,
+        "min": 0.01,
+        "max": 157.35,
+        "rps": 4343.7,
+        "iterations": 156702,
+        "requests": 156702,
+        "failedRate": 0,
+        "durationMs": 36075
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 148850,
+        "hitRate": 0,
+        "mongoQueries": 172406
+      }
+    },
+    {
+      "id": "mixed_none_redis",
+      "scenario": "mixed.js",
+      "scenarioLabel": "Смешанная (95% read / 5% write)",
+      "indexProfile": "none",
+      "indexLabel": "Без индексов",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 4.65,
+        "p90": 7.0,
+        "p95": 12.34,
+        "avg": 5.54,
+        "min": 0.01,
+        "max": 1501.79,
+        "rps": 9792.6,
+        "iterations": 352869,
+        "requests": 352869,
+        "failedRate": 0,
+        "durationMs": 36034
+      },
+      "cache": {
+        "hits": 335002,
+        "misses": 46,
+        "hitRate": 0.9999,
+        "mongoQueries": 53509
+      }
+    },
+    {
+      "id": "mixed_single_off",
+      "scenario": "mixed.js",
+      "scenarioLabel": "Смешанная (95% read / 5% write)",
+      "indexProfile": "single",
+      "indexLabel": "Простые индексы",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 11.36,
+        "p90": 16.48,
+        "p95": 19.61,
+        "avg": 12.35,
+        "min": 0.01,
+        "max": 145.18,
+        "rps": 4460.1,
+        "iterations": 160662,
+        "requests": 160662,
+        "failedRate": 0,
+        "durationMs": 36022
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 152713,
+        "hitRate": 0,
+        "mongoQueries": 176560
+      }
+    },
+    {
+      "id": "mixed_single_redis",
+      "scenario": "mixed.js",
+      "scenarioLabel": "Смешанная (95% read / 5% write)",
+      "indexProfile": "single",
+      "indexLabel": "Простые индексы",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 4.5,
+        "p90": 6.84,
+        "p95": 11.7,
+        "avg": 5.32,
+        "min": 0.02,
+        "max": 506.62,
+        "rps": 9834.3,
+        "iterations": 354957,
+        "requests": 354957,
+        "failedRate": 0,
+        "durationMs": 36093
+      },
+      "cache": {
+        "hits": 337341,
+        "misses": 34,
+        "hitRate": 0.9999,
+        "mongoQueries": 52780
+      }
+    },
+    {
+      "id": "read_esr_lru",
+      "scenario": "read-heavy.js",
+      "scenarioLabel": "Чтение по ID",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "lru",
+      "cacheLabel": "LRU (в памяти процесса)",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 2.2,
+        "p90": 4.2,
+        "p95": 4.9,
+        "avg": 2.6,
+        "min": 0.01,
+        "max": 51.0,
+        "rps": 19847.0,
+        "iterations": 746882,
+        "requests": 746882,
+        "failedRate": 0,
+        "durationMs": 37631
+      },
+      "cache": {
+        "hits": 746851,
+        "misses": 31,
+        "hitRate": 1.0,
+        "mongoQueries": 31
+      }
+    },
+    {
+      "id": "read_esr_off",
+      "scenario": "read-heavy.js",
+      "scenarioLabel": "Чтение по ID",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 9.66,
+        "p90": 13.5,
+        "p95": 14.66,
+        "avg": 10.16,
+        "min": 0.01,
+        "max": 113.96,
+        "rps": 5332.7,
+        "iterations": 195188,
+        "requests": 195188,
+        "failedRate": 0,
+        "durationMs": 36602
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 195188,
+        "hitRate": 0,
+        "mongoQueries": 195188
+      }
+    },
+    {
+      "id": "read_esr_redis",
+      "scenario": "read-heavy.js",
+      "scenarioLabel": "Чтение по ID",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 2.27,
+        "p90": 3.26,
+        "p95": 3.87,
+        "avg": 2.49,
+        "min": 0.02,
+        "max": 735.21,
+        "rps": 20083.9,
+        "iterations": 788371,
+        "requests": 788371,
+        "failedRate": 0,
+        "durationMs": 39253
+      },
+      "cache": {
+        "hits": 788352,
+        "misses": 19,
+        "hitRate": 1.0,
+        "mongoQueries": 19
+      }
+    },
+    {
+      "id": "read_list_esr_off",
+      "scenario": "read-list-heavy.js",
+      "scenarioLabel": "Списки с фильтрами",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 65.86,
+        "p90": 178.08,
+        "p95": 223.2,
+        "avg": 89.27,
+        "min": 0.03,
+        "max": 470.14,
+        "rps": 582.0,
+        "iterations": 22240,
+        "requests": 22240,
+        "failedRate": 0,
+        "durationMs": 38214
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 44480
+      }
+    },
+    {
+      "id": "read_list_esr_redis",
+      "scenario": "read-list-heavy.js",
+      "scenarioLabel": "Списки с фильтрами",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 70.91,
+        "p90": 186.66,
+        "p95": 228.37,
+        "avg": 94.53,
+        "min": 0.04,
+        "max": 412.75,
+        "rps": 549.3,
+        "iterations": 20976,
+        "requests": 20976,
+        "failedRate": 0,
+        "durationMs": 38188
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 41952
+      }
+    },
+    {
+      "id": "read_list_none_off",
+      "scenario": "read-list-heavy.js",
+      "scenarioLabel": "Списки с фильтрами",
+      "indexProfile": "none",
+      "indexLabel": "Без индексов",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 606.9,
+        "p90": 716.39,
+        "p95": 749.24,
+        "avg": 596.32,
+        "min": 0.07,
+        "max": 911.09,
+        "rps": 85.9,
+        "iterations": 3314,
+        "requests": 3314,
+        "failedRate": 0,
+        "durationMs": 38575
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 6628
+      }
+    },
+    {
+      "id": "read_list_single_off",
+      "scenario": "read-list-heavy.js",
+      "scenarioLabel": "Списки с фильтрами",
+      "indexProfile": "single",
+      "indexLabel": "Простые индексы",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 143.01,
+        "p90": 383.8,
+        "p95": 452.66,
+        "avg": 192.13,
+        "min": 0.05,
+        "max": 1116.92,
+        "rps": 278.9,
+        "iterations": 10398,
+        "requests": 10398,
+        "failedRate": 0,
+        "durationMs": 37281
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 20796
+      }
+    },
+    {
+      "id": "read_none_off",
+      "scenario": "read-heavy.js",
+      "scenarioLabel": "Чтение по ID",
+      "indexProfile": "none",
+      "indexLabel": "Без индексов",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 9.68,
+        "p90": 13.58,
+        "p95": 14.92,
+        "avg": 10.23,
+        "min": 0.01,
+        "max": 182.62,
+        "rps": 5244.5,
+        "iterations": 194657,
+        "requests": 194657,
+        "failedRate": 0,
+        "durationMs": 37116
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 194657,
+        "hitRate": 0,
+        "mongoQueries": 194657
+      }
+    },
+    {
+      "id": "read_none_redis",
+      "scenario": "read-heavy.js",
+      "scenarioLabel": "Чтение по ID",
+      "indexProfile": "none",
+      "indexLabel": "Без индексов",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 2.27,
+        "p90": 3.32,
+        "p95": 4.01,
+        "avg": 2.46,
+        "min": -798.29,
+        "max": 23.15,
+        "rps": 20756.8,
+        "iterations": 783029,
+        "requests": 783029,
+        "failedRate": 0,
+        "durationMs": 37724
+      },
+      "cache": {
+        "hits": 783009,
+        "misses": 20,
+        "hitRate": 1.0,
+        "mongoQueries": 20
+      }
+    },
+    {
+      "id": "read_single_off",
+      "scenario": "read-heavy.js",
+      "scenarioLabel": "Чтение по ID",
+      "indexProfile": "single",
+      "indexLabel": "Простые индексы",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 9.48,
+        "p90": 13.25,
+        "p95": 14.37,
+        "avg": 9.94,
+        "min": 0.01,
+        "max": 82.57,
+        "rps": 5442.6,
+        "iterations": 199627,
+        "requests": 199627,
+        "failedRate": 0,
+        "durationMs": 36678
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 199627,
+        "hitRate": 0,
+        "mongoQueries": 199627
+      }
+    },
+    {
+      "id": "search_text_off",
+      "scenario": "search-heavy.js",
+      "scenarioLabel": "Текстовый поиск",
+      "indexProfile": "text",
+      "indexLabel": "Текстовый индекс",
+      "cacheImpl": "none",
+      "cacheLabel": "Без кэша",
+      "cacheEnabled": false,
+      "metrics": {
+        "p50": 105.55,
+        "p90": 149.25,
+        "p95": 160.06,
+        "avg": 104.11,
+        "min": 0.05,
+        "max": 223.43,
+        "rps": 300.2,
+        "iterations": 11448,
+        "requests": 11448,
+        "failedRate": 0,
+        "durationMs": 38136
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 22896
+      }
+    },
+    {
+      "id": "search_text_redis",
+      "scenario": "search-heavy.js",
+      "scenarioLabel": "Текстовый поиск",
+      "indexProfile": "text",
+      "indexLabel": "Текстовый индекс",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 114.85,
+        "p90": 163.2,
+        "p95": 175.54,
+        "avg": 114.21,
+        "min": 0.07,
+        "max": 752.07,
+        "rps": 270.9,
+        "iterations": 10601,
+        "requests": 10601,
+        "failedRate": 0,
+        "durationMs": 39131
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 21202
+      }
+    },
+    {
+      "id": "write_esr_redis",
+      "scenario": "write-heavy.js",
+      "scenarioLabel": "Запись (заказы)",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы (составные)",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 19.88,
+        "p90": 23.56,
+        "p95": 24.77,
+        "avg": 20.37,
+        "min": 0.02,
+        "max": 1489.24,
+        "rps": 1520.6,
+        "iterations": 57212,
+        "requests": 57212,
+        "failedRate": 0,
+        "durationMs": 37623
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 171636
+      }
+    },
+    {
+      "id": "write_none_redis",
+      "scenario": "write-heavy.js",
+      "scenarioLabel": "Запись (заказы)",
+      "indexProfile": "none",
+      "indexLabel": "Без индексов",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 19.66,
+        "p90": 23.4,
+        "p95": 24.67,
+        "avg": 21.07,
+        "min": 0.04,
+        "max": 2503.94,
+        "rps": 1476.9,
+        "iterations": 54035,
+        "requests": 54035,
+        "failedRate": 0,
+        "durationMs": 36585
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 162105
+      }
+    },
+    {
+      "id": "write_single_redis",
+      "scenario": "write-heavy.js",
+      "scenarioLabel": "Запись (заказы)",
+      "indexProfile": "single",
+      "indexLabel": "Простые индексы",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis",
+      "cacheEnabled": true,
+      "metrics": {
+        "p50": 19.63,
+        "p90": 23.92,
+        "p95": 26.23,
+        "avg": 20.51,
+        "min": 0.03,
+        "max": 1584.58,
+        "rps": 1473.6,
+        "iterations": 54502,
+        "requests": 54502,
+        "failedRate": 0,
+        "durationMs": 36986
+      },
+      "cache": {
+        "hits": 0,
+        "misses": 0,
+        "hitRate": null,
+        "mongoQueries": 163506
+      }
+    },
+    {
+      "id": "single_flight",
+      "scenario": "single-flight",
+      "scenarioLabel": "Защита от лавины (Cache Stampede)",
+      "indexProfile": "esr",
+      "indexLabel": "ESR-индексы",
+      "cacheImpl": "redis",
+      "cacheLabel": "Redis + single-flight",
+      "cacheEnabled": true,
+      "isStampede": true,
+      "metrics": {
+        "p50": 2.5,
+        "p90": 38.6,
+        "p95": 44.13,
+        "avg": 9.62,
+        "min": 0.71,
+        "max": 71.69,
+        "rps": 21.1,
+        "iterations": 600,
+        "requests": 600,
+        "durationMs": 28436
+      },
+      "cache": {
+        "hits": 491,
+        "misses": 109,
+        "hitRate": 0.8183,
+        "mongoQueries": 5
+      },
+      "stampedeMetrics": {
+        "totalRequests": 600,
+        "missesDuringStampede": 109,
+        "mongoQueriesDeduplicated": 5,
+        "deduplicationRatio": 21.8,
+        "efficiencyPercent": 95.4
+      }
+    }
+  ]
+}

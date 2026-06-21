@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js × MongoDB · Дашборд экспериментов</title>
+  <meta name="description" content="Результаты сравнительного исследования стратегий кэширования и индексирования. Магистерская ВКР, Еремеев Н.А.">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+<!-- Шапка -->
+<header class="app-header">
+  <div class="container header-inner">
+    <div class="brand">
+      <div class="brand-logo">NM</div>
+      <div class="brand-text">
+        <div class="brand-title">Node.js × MongoDB</div>
+        <div class="brand-subtitle">Дашборд экспериментов · ВКР Еремеев Н.А.</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#overview" class="nav-link active" data-section="overview">Обзор</a>
+      <a href="#experiments" class="nav-link" data-section="experiments">Эксперименты</a>
+      <a href="#charts" class="nav-link" data-section="charts">Графики</a>
+      <a href="#stampede" class="nav-link" data-section="stampede">Защита от лавины</a>
+      <a href="#methodology" class="nav-link" data-section="methodology">Методология</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+      <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+      <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main class="container main-content">
+
+  <!-- ОБЗОР -->
+  <section id="overview" class="section active">
+    <div class="hero">
+      <h1 class="hero-title">
+        Исследование производительности
+        <span class="hero-accent">Node.js + MongoDB</span>
+      </h1>
+      <p class="hero-subtitle">
+        Сравнительный анализ стратегий кэширования и индексирования на стенде из 22 экспериментов.
+        Все числа получены на реальном стенде. Код открыт.
+      </p>
+      <div class="hero-actions">
+        <a href="https://github.com/Inthetouch/nodejs-mongodb-project" class="btn btn-primary" target="_blank">
+          Открыть на GitHub →
+        </a>
+        <a href="#experiments" class="btn btn-secondary">К результатам</a>
+      </div>
+    </div>
+
+    <h2 class="section-title">Ключевые результаты</h2>
+    <div class="kpi-grid">
+      <article class="kpi-card kpi-success">
+        <div class="kpi-label">Ускорение от ESR-индекса</div>
+        <div class="kpi-value" id="kpiEsr">9×</div>
+        <div class="kpi-detail">На сложных запросах со списками и фильтрами</div>
+      </article>
+      <article class="kpi-card kpi-primary">
+        <div class="kpi-label">Ускорение от Redis-кэша</div>
+        <div class="kpi-value" id="kpiRedis">4×</div>
+        <div class="kpi-detail">На точечных запросах по ID</div>
+      </article>
+      <article class="kpi-card kpi-accent">
+        <div class="kpi-label">Защита от лавины запросов</div>
+        <div class="kpi-value" id="kpiStampede">22×</div>
+        <div class="kpi-detail">Дедупликация одновременных промахов</div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-label">Стоимость индексов при записи</div>
+        <div class="kpi-value" id="kpiWrite">&lt;1%</div>
+        <div class="kpi-detail">Разрушает распространённый миф</div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-label">Сокращение чтений из базы</div>
+        <div class="kpi-value" id="kpiDocs">200K → 10</div>
+        <div class="kpi-detail">Документов просматривает база с ESR-индексом</div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-label">Эффективность защиты</div>
+        <div class="kpi-value" id="kpiEff">95%</div>
+        <div class="kpi-detail">От лавины запросов при истечении кэша</div>
+      </article>
+    </div>
+
+    <div class="overview-summary">
+      <h2 class="section-title">Главный вывод</h2>
+      <p class="overview-text">
+        Индексы и кэш — <strong>не конкуренты, а дополняющие друг друга решения</strong>.
+        Индексы ускоряют сложные запросы с фильтрами в <strong>9 раз</strong>.
+        Кэш ускоряет простые точечные запросы в <strong>4 раза</strong>.
+        Вместе они дают системе предсказуемую скорость на любом типе нагрузки.
+      </p>
+    </div>
+  </section>
+
+  <!-- ЭКСПЕРИМЕНТЫ -->
+  <section id="experiments" class="section">
+    <h2 class="section-title">22 эксперимента</h2>
+    <p class="section-subtitle">
+      Полная матрица: 4 типа сценариев × 4 индексных профиля × 2 состояния кэша.
+      Каждый эксперимент — 30 секунд под нагрузкой 50 виртуальных пользователей.
+    </p>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Сценарий</label>
+        <select class="filter-select" id="filterScenario">
+          <option value="">Все</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Индекс</label>
+        <select class="filter-select" id="filterIndex">
+          <option value="">Все</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Кэш</label>
+        <select class="filter-select" id="filterCache">
+          <option value="">Все</option>
+          <option value="off">Выключен</option>
+          <option value="on">Включён</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table" id="runsTable">
+        <thead>
+          <tr>
+            <th>Сценарий</th>
+            <th>Индекс</th>
+            <th>Кэш</th>
+            <th class="num">p50, мс</th>
+            <th class="num">p95, мс</th>
+            <th class="num">RPS</th>
+            <th class="num">Hit rate</th>
+            <th class="num">Запросов</th>
+          </tr>
+        </thead>
+        <tbody id="runsTableBody">
+          <tr><td colspan="8" class="loading-row">Загрузка данных...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ГРАФИКИ -->
+  <section id="charts" class="section">
+    <h2 class="section-title">Сравнительные графики</h2>
+    <p class="section-subtitle">
+      Визуальное сравнение результатов по ключевым метрикам.
+    </p>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3 class="chart-title">Время ответа (p50) по сценариям</h3>
+        <p class="chart-desc">Чем ниже столбец — тем быстрее отвечает приложение</p>
+        <div class="chart-container"><canvas id="chartP50"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <h3 class="chart-title">Запросов в секунду (RPS)</h3>
+        <p class="chart-desc">Чем выше — тем больше пользователей одновременно</p>
+        <div class="chart-container"><canvas id="chartRps"></canvas></div>
+      </div>
+
+      <div class="chart-card chart-card-wide">
+        <h3 class="chart-title">Эффект ESR-индекса на списках</h3>
+        <p class="chart-desc">9-кратное ускорение от правильно настроенного индекса</p>
+        <div class="chart-container"><canvas id="chartEsr"></canvas></div>
+      </div>
+
+      <div class="chart-card chart-card-wide">
+        <h3 class="chart-title">Эффект Redis-кэша на чтении по ID</h3>
+        <p class="chart-desc">4-кратное ускорение от добавления Redis в цепочку</p>
+        <div class="chart-container"><canvas id="chartRedis"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗАЩИТА ОТ ЛАВИНЫ -->
+  <section id="stampede" class="section">
+    <h2 class="section-title">Защита от лавины запросов</h2>
+    <p class="section-subtitle">
+      Когда срок жизни популярного ключа истекает у сотни одновременных запросов,
+      все они устремляются в базу. Защита single-flight дедуплицирует промахи: первый запрос идёт в базу,
+      остальные ждут его результат.
+    </p>
+
+    <div class="stampede-grid">
+      <div class="stampede-card">
+        <div class="stampede-value" data-stampede="total">600</div>
+        <div class="stampede-label">HTTP-запросов всего</div>
+      </div>
+      <div class="stampede-card">
+        <div class="stampede-value" data-stampede="misses">109</div>
+        <div class="stampede-label">Промахов кэша</div>
+      </div>
+      <div class="stampede-card stampede-highlight">
+        <div class="stampede-value" data-stampede="mongo">5</div>
+        <div class="stampede-label">Запросов в базу данных</div>
+      </div>
+      <div class="stampede-card">
+        <div class="stampede-value" data-stampede="ratio">21.8×</div>
+        <div class="stampede-label">Коэффициент дедупликации</div>
+      </div>
+      <div class="stampede-card">
+        <div class="stampede-value" data-stampede="efficiency">95.4%</div>
+        <div class="stampede-label">Эффективность защиты</div>
+      </div>
+      <div class="stampede-card">
+        <div class="stampede-value">100</div>
+        <div class="stampede-label">Виртуальных пользователей</div>
+      </div>
+    </div>
+
+    <div class="code-card">
+      <div class="code-header">
+        <span class="code-file">src/cache/redis.cache.ts</span>
+        <span class="code-lines">24 строки</span>
+      </div>
+      <pre class="code-block"><code><span class="code-comment">// Single-flight: дедупликация одновременных промахов одного ключа</span>
+private readonly inFlight = new Map&lt;string, Promise&lt;unknown&gt;&gt;();
+
+async getOrLoad&lt;T&gt;(key: string, ttlSeconds: number, loader: () =&gt; Promise&lt;T&gt;) {
+  <span class="code-comment">// 1. Проверяем кэш</span>
+  const cached = await this.get&lt;T&gt;(key);
+  if (cached !== null) return cached;
+
+  <span class="code-comment">// 2. Если уже идёт загрузка — ждём её результат</span>
+  const existing = this.inFlight.get(key);
+  if (existing !== undefined) return existing as Promise&lt;T&gt;;
+
+  <span class="code-comment">// 3. Запускаем единственный реальный запрос</span>
+  const promise = (async () =&gt; {
+    try {
+      const value = await loader();
+      if (value !== null) await this.set(key, value, ttlSeconds);
+      return value;
+    } finally {
+      this.inFlight.delete(key); <span class="code-comment">// 4. После завершения — снимаем замок</span>
+    }
+  })();
+
+  this.inFlight.set(key, promise);
+  return promise;
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- МЕТОДОЛОГИЯ -->
+  <section id="methodology" class="section">
+    <h2 class="section-title">Методология</h2>
+
+    <div class="method-grid">
+      <div class="method-card">
+        <h3 class="method-title">Тестовый стенд</h3>
+        <ul class="method-list">
+          <li><strong>Платформа:</strong> Node.js 25 + TypeScript</li>
+          <li><strong>Веб-фреймворк:</strong> Fastify 5.8</li>
+          <li><strong>База данных:</strong> MongoDB 7.0</li>
+          <li><strong>Кэш:</strong> Redis 7.2 + lru-cache 11.4</li>
+          <li><strong>Метрики:</strong> Prometheus client</li>
+          <li><strong>Нагрузка:</strong> Grafana k6</li>
+          <li><strong>Изоляция:</strong> Docker Compose</li>
+        </ul>
+      </div>
+
+      <div class="method-card">
+        <h3 class="method-title">Среда испытаний</h3>
+        <ul class="method-list">
+          <li><strong>CPU:</strong> <span data-meta="cpu">Intel Core i7-12700KF</span></li>
+          <li><strong>RAM:</strong> <span data-meta="ram">16 ГБ</span></li>
+          <li><strong>OS:</strong> <span data-meta="os">Linux WSL2</span></li>
+          <li><strong>Docker:</strong> <span data-meta="docker">29.4.3</span></li>
+          <li><strong>Node.js:</strong> <span data-meta="node">25.9.0</span></li>
+          <li><strong>MongoDB:</strong> <span data-meta="mongo">7.0.34</span></li>
+          <li><strong>Всего прогонов:</strong> <span data-meta="totalRuns">22</span></li>
+        </ul>
+      </div>
+
+      <div class="method-card">
+        <h3 class="method-title">Тестовые данные</h3>
+        <ul class="method-list">
+          <li><strong>Товары:</strong> 200 000</li>
+          <li><strong>Пользователи:</strong> 50 000</li>
+          <li><strong>Заказы:</strong> 100 000</li>
+          <li><strong>Категории:</strong> 5 (электроника, одежда, книги, дом, спорт)</li>
+          <li><strong>Распределение запросов:</strong> Парето 80/20</li>
+          <li><strong>Воспроизводимость:</strong> фиксированный seed</li>
+        </ul>
+      </div>
+
+      <div class="method-card">
+        <h3 class="method-title">Параметры прогонов</h3>
+        <ul class="method-list">
+          <li><strong>Длительность:</strong> 30 секунд под нагрузкой</li>
+          <li><strong>Прогрев:</strong> 15–30 секунд</li>
+          <li><strong>Виртуальные пользователи:</strong> 50 (для лавины — 100)</li>
+          <li><strong>Метрика:</strong> after − afterWarmup (чистый интервал)</li>
+          <li><strong>Снимки состояния:</strong> before, afterWarmup, after</li>
+        </ul>
+      </div>
+
+      <div class="method-card">
+        <h3 class="method-title">Что измеряем</h3>
+        <ul class="method-list">
+          <li><strong>p50, p95, p99:</strong> квантили времени ответа</li>
+          <li><strong>RPS:</strong> запросов в секунду</li>
+          <li><strong>http_req_failed:</strong> доля ошибок</li>
+          <li><strong>cache hits/misses:</strong> попадания в кэш</li>
+          <li><strong>mongo queries:</strong> реальные обращения в базу</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="links-card">
+      <h3 class="method-title">Ссылки</h3>
+      <div class="links-grid">
+        <a href="https://github.com/Inthetouch/nodejs-mongodb-project" class="link-card" target="_blank">
+          <div class="link-icon">📦</div>
+          <div class="link-text">
+            <div class="link-title">Репозиторий</div>
+            <div class="link-desc">Исходный код стенда</div>
+          </div>
+        </a>
+        <a href="#" class="link-card">
+          <div class="link-icon">📄</div>
+          <div class="link-text">
+            <div class="link-title">ВКР (PDF)</div>
+            <div class="link-desc">Полный текст исследования</div>
+          </div>
+        </a>
+        <a href="#" class="link-card">
+          <div class="link-icon">🎥</div>
+          <div class="link-text">
+            <div class="link-title">Видеодемо</div>
+            <div class="link-desc">Скрин-каст работы стенда</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  <div class="container footer-inner">
+    <div>© 2026 Еремеев Н.А., группа МИСТ-24-3-4 · НИТУ МИСИС</div>
+    <div>Магистерская ВКР · Веб-разработка</div>
+  </div>
+</footer>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>
