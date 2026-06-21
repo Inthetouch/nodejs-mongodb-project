@@ -75,6 +75,7 @@
 
 html { scroll-behavior: smooth; }
 
+/* Sticky footer: body — флекс-контейнер высоты 100vh, main растягивается */
 body {
   font-family: var(--font-sans);
   background: var(--bg-primary);
@@ -82,7 +83,17 @@ body {
   line-height: 1.6;
   font-size: 15px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   transition: background var(--transition), color var(--transition);
+}
+
+.main-content {
+  flex: 1 0 auto;  /* растягивается по высоте, прижимая подвал к низу */
+}
+
+.app-footer {
+  flex-shrink: 0;  /* не сжимается */
 }
 
 .container {
@@ -487,11 +498,13 @@ a:hover { color: var(--accent-primary-hover); }
 .badge-accent { color: var(--accent-purple); border-color: var(--accent-purple); background: transparent; }
 .badge-muted { color: var(--text-tertiary); }
 
-/* ========== Галерея рисунков из ВКР ========== */
-.figures-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+/* ========== Графики (Chart.js) в карточках ========== */
+.figures-list {
+  display: flex;
+  flex-direction: column;
   gap: 32px;
+  max-width: 960px;
+  margin: 0 auto;  /* центрирование ленты по странице */
 }
 
 .figure-card {
@@ -499,56 +512,75 @@ a:hover { color: var(--accent-primary-hover); }
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
-.figure-card img {
-  width: 100%;
-  height: auto;
-  display: block;
-  background: #ffffff;
+.figure-header {
+  padding: 20px 28px 8px;
 }
 
-.fig-caption {
-  padding: 16px 24px 8px;
-  font-size: 15px;
-  font-weight: 600;
+.figure-title {
+  font-size: 16px;
+  font-weight: 700;
   color: var(--text-primary);
-  border-top: 1px solid var(--border-primary);
+  margin: 0;
+  text-align: center;
+  line-height: 1.4;
 }
 
-.fig-body {
-  padding: 0 24px 24px;
+.figure-canvas {
+  padding: 8px 24px 16px;
+  height: 380px;  /* фиксированная высота для визуального ритма между карточками */
+  position: relative;
+}
+
+.figure-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.figure-text {
+  padding: 4px 28px 28px;
+  border-top: 1px solid var(--border-primary);
+  margin-top: 4px;
+  padding-top: 20px;
 }
 
 .fig-desc {
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.7;
   color: var(--text-secondary);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .fig-conclusion {
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--text-primary);
-  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
   background: var(--bg-tertiary);
   border-left: 3px solid var(--accent-primary);
   border-radius: var(--radius-sm);
 }
 
-.fig-conclusion strong {
+.fig-conclusion-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
   color: var(--accent-primary);
-  font-weight: 600;
 }
 
-/* На больших экранах — две колонки */
-@media (min-width: 1024px) {
-  .figures-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+.fig-conclusion p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .figure-canvas { height: 320px; padding: 8px 12px 12px; }
+  .figure-header, .figure-text { padding-left: 18px; padding-right: 18px; }
+  .figure-title { font-size: 15px; }
 }
 
 /* ========== Hero-eyebrow ========== */
