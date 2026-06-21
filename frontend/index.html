@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Дашборд экспериментов</title>
+  <title>Node.js × MongoDB · Дашборд экспериментов</title>
   <meta name="description" content="Результаты сравнительного исследования стратегий кэширования и индексирования. Магистерская ВКР, Еремеев Н.А.">
   <link rel="stylesheet" href="assets/style.css">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+
 </head>
 <body>
 
@@ -19,7 +18,7 @@
       <a href="#overview" class="nav-link active" data-section="overview">Обзор</a>
       <a href="#experiments" class="nav-link" data-section="experiments">Эксперименты</a>
       <a href="#charts" class="nav-link" data-section="charts">Графики</a>
-      <a href="#stampede" class="nav-link" data-section="stampede">Защита от лавины (Cache Stampede)</a>
+      <a href="#stampede" class="nav-link" data-section="stampede">Защита от лавины</a>
       <a href="#methodology" class="nav-link" data-section="methodology">Параметры эксперимента</a>
     </nav>
     <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
@@ -39,13 +38,13 @@
   <!-- ОБЗОР -->
   <section id="overview" class="section active">
     <div class="hero">
+      <div class="hero-eyebrow">Выпускная квалификационная работа магистра</div>
       <h1 class="hero-title">
-        Исследование производительности
-        <span class="hero-accent">Node.js + MongoDB</span>
+        Исследование и оптимизация производительности
+        <span class="hero-accent">Node.js-приложений</span>
       </h1>
       <p class="hero-subtitle">
-        Сравнительный анализ стратегий кэширования и индексирования на стенде из 22 экспериментов.
-        Все числа получены на реальном стенде. Код открыт.
+        Сравнительный анализ стратегий кэширования и индексирования
       </p>
       <div class="hero-actions">
         <a href="https://github.com/Inthetouch/nodejs-mongodb-project" class="btn btn-primary" target="_blank">
@@ -54,42 +53,6 @@
         <a href="#experiments" class="btn btn-secondary">К результатам</a>
       </div>
     </div>
-
-    <h2 class="section-title">Ключевые результаты</h2>
-    <div class="kpi-grid">
-      <article class="kpi-card kpi-success">
-        <div class="kpi-label">Ускорение от ESR-индекса</div>
-        <div class="kpi-value" id="kpiEsr">9×</div>
-        <div class="kpi-detail">На сложных запросах со списками и фильтрами</div>
-      </article>
-      <article class="kpi-card kpi-primary">
-        <div class="kpi-label">Ускорение от Redis-кэша</div>
-        <div class="kpi-value" id="kpiRedis">4×</div>
-        <div class="kpi-detail">На точечных запросах по ID</div>
-      </article>
-      <article class="kpi-card kpi-accent">
-        <div class="kpi-label">Защита от лавины запросов</div>
-        <div class="kpi-value" id="kpiStampede">22×</div>
-        <div class="kpi-detail">Дедупликация одновременных промахов</div>
-      </article>
-      <article class="kpi-card">
-        <div class="kpi-label">Стоимость индексов при записи</div>
-        <div class="kpi-value" id="kpiWrite">&lt;1%</div>
-        <div class="kpi-detail">Разрушает распространённый миф</div>
-      </article>
-      <article class="kpi-card">
-        <div class="kpi-label">Сокращение чтений из базы</div>
-        <div class="kpi-value" id="kpiDocs">200K → 10</div>
-        <div class="kpi-detail">Документов просматривает база с ESR-индексом</div>
-      </article>
-      <article class="kpi-card">
-        <div class="kpi-label">Эффективность защиты</div>
-        <div class="kpi-value" id="kpiEff">95%</div>
-        <div class="kpi-detail">От лавины запросов при истечении кэша</div>
-      </article>
-    </div>
-
-<!-- блок Главный вывод убран по запросу -->
   </section>
 
   <!-- ЭКСПЕРИМЕНТЫ -->
@@ -146,35 +109,175 @@
 
   <!-- ГРАФИКИ -->
   <section id="charts" class="section">
-    <h2 class="section-title">Сравнительные графики</h2>
+    <h2 class="section-title">Графики результатов</h2>
     <p class="section-subtitle">
-      Визуальное сравнение результатов по ключевым метрикам.
+      Все графики собраны из реальных выходов стенда и используются в тексте выпускной работы.
     </p>
 
-    <div class="charts-grid">
-      <div class="chart-card">
-        <h3 class="chart-title">Время ответа (p50) по сценариям</h3>
-        <p class="chart-desc">Чем ниже столбец — тем быстрее отвечает приложение</p>
-        <div class="chart-container"><canvas id="chartP50"></canvas></div>
-      </div>
+    <div class="figures-grid">
 
-      <div class="chart-card">
-        <h3 class="chart-title">Запросов в секунду (RPS)</h3>
-        <p class="chart-desc">Чем выше — тем больше пользователей одновременно</p>
-        <div class="chart-container"><canvas id="chartRps"></canvas></div>
-      </div>
+      <figure class="figure-card">
+        <img src="assets/figures/fig_0_explain_comparison.jpg" alt="Рис. 3.0. Сравнение explain" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.0. Сравнение explain-планов по профилям индексов</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Показывает реальные параметры выполнения запроса MongoDB для трёх профилей: без индексов (none),
+            с простыми индексами (single) и с составным ESR-индексом. База данных сама рассказывает,
+            сколько документов в реальности просматривает и за сколько миллисекунд.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Без индексов просматривается все 200 000 документов, с ESR-индексом — всего 10.
+            Это объективное подтверждение того, что все последующие измерения латентности отражают
+            реальную работу индексов, а не случайные флуктуации.
+          </p>
+        </div>
+      </figure>
 
-      <div class="chart-card chart-card-wide">
-        <h3 class="chart-title">Эволюция скорости: списки товаров</h3>
-        <p class="chart-desc">Слева направо — как постепенное улучшение настроек базы ускоряет запрос с фильтрами. Базовый вариант — 606,9 мс, лучший — 65,9 мс.</p>
-        <div class="chart-container"><canvas id="chartEsr"></canvas></div>
-      </div>
+      <figure class="figure-card">
+        <img src="assets/figures/fig_1_index_effect_list.jpg" alt="Рис. 3.1. Эффект индексов на list-запросы" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.1. Эффект индексов на запросы со списками</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Латентность запроса к списку товаров с фильтрами по категории, рейтингу и цене под нагрузкой 50 VU
+            без кэша. Столбцы — медиана (p50), 95-й и 99-й перцентили.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Переход от полного скана к ESR-индексу ускоряет запрос в 9 раз по медиане
+            и в 2,8 раза по p99. Простые индексы дают только частичный эффект — важен именно составной индекс
+            под форму запроса.
+          </p>
+        </div>
+      </figure>
 
-      <div class="chart-card chart-card-wide">
-        <h3 class="chart-title">Кэш против базы: чтение по ID</h3>
-        <p class="chart-desc">Пары рядом показывают: при любом индексе кэш даёт одинаковый выигрыш — около 4×. Индексы не работают на этом типе запросов.</p>
-        <div class="chart-container"><canvas id="chartRedis"></canvas></div>
-      </div>
+      <figure class="figure-card">
+        <img src="assets/figures/fig_2_index_effect_byid.jpg" alt="Рис. 3.2. Read-by-id и профиль индексов" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.2. Чтение по ID: профиль индексов не влияет</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Латентность точечного чтения GET /products/:id по трём профилям индексов. Кэш выключен,
+            все запросы идут в базу.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Различия между профилями меньше 2% — это статистический шум. Чтение по _id
+            обслуживается системным индексом MongoDB в любом случае. Чтобы ускорять такие запросы, нужен
+            инструмент с другого уровня — кэш (рис. 3.4).
+          </p>
+        </div>
+      </figure>
+
+      <figure class="figure-card">
+        <img src="assets/figures/fig_3_mixed_no_cache.jpg" alt="Рис. 3.3. Mixed-нагрузка без кэша" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.3. Смешанная нагрузка без кэша</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Профиль 95% чтений и 5% записей — имитация реального интернет-магазина. Столбцы — латентность
+            чтений и записей отдельно по трём профилям индексов.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Без кэша все варианты дают похожие результаты. Основная нагрузка в этом сценарии —
+            это чтения по _id, а индексы на них не влияют (рис. 3.2). Но высокая латентность
+            записей выдаёт «скрытую» нагрузку — внутри записей есть несколько валидационных чтений,
+            которые тоже идут в базу.
+          </p>
+        </div>
+      </figure>
+
+      <figure class="figure-card">
+        <img src="assets/figures/fig_4_cache_effect_byid.jpg" alt="Рис. 3.4. Эффект Redis-кэша на read-by-id" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.4. Эффект Redis-кэша на чтение по ID</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Сравнение латентности GET /products/:id без кэша (OFF) и с включённым Redis. Пары рядом показывают этот
+            эффект для разных профилей индексов.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Redis ускоряет чтение в 4 раза — с 9,7 до 2,3 мс по медиане. И этот выигрыш
+            не зависит от индекса: при попадании в кэш запрос вообще не доходит до MongoDB. Это подтверждает
+            вывод: индексы и кэш работают на разных классах запросов.
+          </p>
+        </div>
+      </figure>
+
+      <figure class="figure-card">
+        <img src="assets/figures/fig_5_mixed_with_cache.jpg" alt="Рис. 3.5. Mixed-нагрузка с Redis" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.5. Смешанная нагрузка с кэшем Redis</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Тот же mixed-сценарий (95% чтений + 5% записей), но с включённым Redis. Отдельно показана латентность
+            чтений и записей.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Кэш ускоряет не только чтения, но и записи — с 26 до 17 мс по медиане.
+            Это неожиданный положительный эффект: внутри POST /orders выполняются валидационные чтения
+            пользователя и товаров, которые тоже обслуживаются кэшем.
+          </p>
+        </div>
+      </figure>
+
+      <figure class="figure-card">
+        <img src="assets/figures/fig_6_index_cost_write.jpg" alt="Рис. 3.6. Стоимость индексов при записи" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.6. Стоимость индексов при чистой записи</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Латентность POST /orders в сценарии только запись, по трём профилям индексов. Цель —
+            проверить распространённый миф, что индексы «дорого стоят» при записи в MongoDB.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Разница между всеми тремя профилями меньше 1%. Стоимость индексов при реальной
+            транзакционной записи (инсерт + валидации + инвалидация кэша) практически нулевая. Миф разрушен.
+          </p>
+        </div>
+      </figure>
+
+      <figure class="figure-card">
+        <img src="assets/figures/fig_7_no_caching_list_search.jpg" alt="Рис. 3.7. Redis без кэширования list/search" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.7. Redis не ускоряет списки и поиск</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Латентность list и search-запросов с выключенным и включенным Redis. Повышенная латентность при
+            включенном Redis объясняется тем, что результат всё равно идёт в базу — эти запросы не кэшируются.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Кэш по параметрам (категория, фильтр, страница) сложнее в реализации
+            из-за инвалидации. Для list и search-запросов фундаментальный инструмент ускорения — именно
+            составные индексы, а не кэш.
+          </p>
+        </div>
+      </figure>
+
+      <figure class="figure-card">
+        <img src="assets/figures/fig_8_lru_vs_redis.jpg" alt="Рис. 3.8. Сравнение LRU и Redis" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.8. Сравнение LRU (в памяти) и Redis</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Сравнение двух реализаций кэша на одном и том же сценарии (ESR-индекс, read-by-id):
+            внутрипроцессный LRU и внешний Redis. Показаны p50, p95 и максимум.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> LRU немного быстрее по медиане из-за отсутствия сетевого вызова, но имеет
+            выброс 735 мс по максимуму (блокировки event loop). Redis стабильнее и работает в multi-instance.
+            Для one-shot-сервера — LRU, для масштабируемых — Redis.
+          </p>
+        </div>
+      </figure>
+
+      <figure class="figure-card">
+        <img src="assets/figures/fig_9_single_flight.jpg" alt="Рис. 3.9. Single-flight дедупликация" loading="lazy">
+        <figcaption class="fig-caption">Рис. 3.9. Single-flight: дедупликация при лавине запросов</figcaption>
+        <div class="fig-body">
+          <p class="fig-desc">
+            Микроэксперимент по Cache Stampede: 100 одновременных запросов к одному популярному ключу
+            в момент истечения TTL. Показаны: попадания в кэш (cache hits), промахи кэша (misses) и реальные
+            запросы в MongoDB.
+          </p>
+          <p class="fig-conclusion">
+            <strong>Вывод.</strong> Из 600 HTTP-запросов в базу дошли только 5 — это дедупликация в 21,8 раз и
+            эффективность 95,4%. Остальные 109 промахов «подписались» на результат одного из 5 запросов
+            через механизм inFlight. База защищена от каскадного падения.
+          </p>
+        </div>
+      </figure>
+
     </div>
   </section>
 
