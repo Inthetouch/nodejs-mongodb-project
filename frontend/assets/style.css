@@ -222,6 +222,14 @@ a:hover { color: var(--accent-primary-hover); }
 .section { display: none; }
 .section.active { display: block; animation: fadeIn 300ms ease-out; }
 
+#overview.section.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 220px);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -244,7 +252,7 @@ a:hover { color: var(--accent-primary-hover); }
 
 .hero {
   text-align: center;
-  padding: 32px 0 56px;
+  padding: 0;
   width: 100%;
   max-width: 960px;
   margin-left: auto;
