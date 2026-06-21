@@ -12,10 +12,8 @@
 </head>
 <body>
 
-<!-- Шапка -->
 <header class="app-header">
   <div class="container header-inner">
-<!-- бренд-блок убран по запросу пользователя -->
     <nav class="nav">
       <a href="#overview" class="nav-link active" data-section="overview">Обзор</a>
       <a href="#experiments" class="nav-link" data-section="experiments">Эксперименты</a>
@@ -23,21 +21,10 @@
       <a href="#stampede" class="nav-link" data-section="stampede">Защита от лавины</a>
       <a href="#methodology" class="nav-link" data-section="methodology">Параметры эксперимента</a>
     </nav>
-    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
-      <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="4"/>
-        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-      </svg>
-      <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-    </button>
   </div>
 </header>
 
 <main class="container main-content">
-
-  <!-- ОБЗОР -->
   <section id="overview" class="section active">
     <div class="hero">
       <div class="hero-eyebrow">Выпускная квалификационная работа магистра</div>
@@ -57,14 +44,12 @@
     </div>
   </section>
 
-  <!-- ЭКСПЕРИМЕНТЫ -->
   <section id="experiments" class="section">
     <h2 class="section-title">22 эксперимента</h2>
     <p class="section-subtitle">
       Полная матрица: 4 типа сценариев × 4 индексных профиля × 2 состояния кэша.
       Каждый эксперимент — 30 секунд под нагрузкой 50 виртуальных пользователей.
     </p>
-
     <div class="filters">
       <div class="filter-group">
         <label class="filter-label">Сценарий</label>
@@ -109,7 +94,6 @@
     </div>
   </section>
 
-  <!-- ГРАФИКИ -->
   <section id="charts" class="section">
     <h2 class="section-title">Графики результатов</h2>
     <p class="section-subtitle">
@@ -117,7 +101,6 @@
     </p>
 
     <div class="figures-list">
-
       <article class="figure-card" data-chart="fig0">
         <header class="figure-header">
           <h3 class="figure-title">Сравнение explain-планов по профилям индексов</h3>
@@ -308,12 +291,9 @@
           </div>
         </div>
       </article>
-
     </div>
-
   </section>
 
-  <!-- ЗАЩИТА ОТ ЛАВИНЫ -->
   <section id="stampede" class="section">
     <h2 class="section-title">Защита от лавины запросов</h2>
     <p class="section-subtitle">
@@ -383,7 +363,6 @@ async getOrLoad&lt;T&gt;(key: string, ttlSeconds: number, loader: () =&gt; Promi
     </div>
   </section>
 
-  <!-- ПАРАМЕТРЫ ЭКСПЕРИМЕНТА -->
   <section id="methodology" class="section">
     <h2 class="section-title">Параметры эксперимента</h2>
 
@@ -448,9 +427,7 @@ async getOrLoad&lt;T&gt;(key: string, ttlSeconds: number, loader: () =&gt; Promi
         </ul>
       </div>
     </div>
-
   </section>
-
 </main>
 
 <footer class="app-footer">

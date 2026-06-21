@@ -1,4 +1,4 @@
-// ====== Состояние приложения ======
+// Состояние приложения
 const state = {
   meta: null,
   runs: [],
@@ -14,7 +14,7 @@ function handleHashNavigation() {
   switchSection(hash);
 }
 
-// ====== Утилиты ======
+// Утилиты
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 
@@ -42,7 +42,7 @@ const getThemeColors = () => {
   };
 };
 
-// ====== Тема ======
+//Тема
 function initTheme() {
   const saved = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', saved);
@@ -53,17 +53,13 @@ function initTheme() {
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
 
-    // Перерисовываем графики с новыми цветами
     Object.values(state.charts).forEach((ch) => ch && ch.destroy());
     state.charts = {};
     renderAllCharts();
   });
 }
 
-// ====== Навигация ======
-// Общая функция переключения секции — находит секцию по id, делает её активной,
-// подсвечивает соответствующий nav-link.
-// Используется и по клику на меню, и по клику на кнопки «К результатам» и т.п.
+//Навигация
 function switchSection(target) {
   if (!target) return;
   const section = document.getElementById(target);
@@ -94,7 +90,7 @@ function initNav() {
   });
 }
 
-// ====== Загрузка данных ======
+//Загрузка данных
 async function loadData() {
   try {
     const res = await fetch('data/runs.json');
@@ -127,7 +123,7 @@ async function loadData() {
   }
 }
 
-// ====== Фильтры ======
+//Фильтры
 function populateFilters() {
   const scenarios = [...new Set(state.runs.map((r) => r.scenarioLabel))];
   const indexes = [...new Set(state.runs.map((r) => r.indexLabel))];
@@ -169,7 +165,7 @@ function applyFilters() {
   renderTable();
 }
 
-// ====== Таблица ======
+//Таблица
 function renderTable() {
   const body = $('#runsTableBody');
   if (state.filteredRuns.length === 0) {
@@ -203,7 +199,7 @@ function renderTable() {
     .join('');
 }
 
-// ====== Графики ======
+//Графики
 function chartCommonOptions(colors) {
   return {
     responsive: true,
@@ -354,15 +350,12 @@ function renderChartRps() {
   });
 }
 
-// График 3: Эффект индекса на списках.
-// Показываем в правильном порядке «от худшего к лучшему» — видна история улучшения
 function renderChartEsr() {
   if (!window.Chart) return;
   const colors = getThemeColors();
   const ctx = $('#chartEsr');
   if (!ctx) return;
 
-  // Ищем конкретные прогоны в правильном порядке эволюции
   const findRun = (id) => state.runs.find((r) => r.id === id);
   const noneRun = findRun('read_list_none_off');
   const singleRun = findRun('read_list_single_off');
@@ -371,7 +364,6 @@ function renderChartEsr() {
 
   if (!noneRun || !singleRun || !esrRun) return;
 
-  // Собираем данные в порядке улучшения. Без индексов — база. Делим на неё остальные.
   const baseline = noneRun.metrics.p50;
   const data = [
     { label: 'Без индексов', value: noneRun.metrics.p50, color: colors.danger, speedup: 'база' },
@@ -433,8 +425,6 @@ function renderChartEsr() {
   });
 }
 
-// График 4: Эффект кэша на чтении по ID.
-// Группированные столбцы по профилям индекса, пары «с кэшем / без» рядом.
 function renderChartRedis() {
   if (!window.Chart) return;
   const colors = getThemeColors();
@@ -542,7 +532,6 @@ function renderAllCharts() {
   renderChartRedis();
 }
 
-// ====== Обновление блока single-flight из реальных данных ======
 function renderStampede() {
   if (!state.stampede) return;
   const sm = state.stampede.stampedeMetrics;
@@ -560,7 +549,6 @@ function renderStampede() {
   set('[data-stampede="efficiency"]', sm.efficiencyPercent + '%');
 }
 
-// ====== Обновление метаданных среды ======
 function renderMeta() {
   if (!state.meta) return;
   const env = state.meta.environment || {};
@@ -577,15 +565,10 @@ function renderMeta() {
   set('[data-meta="totalRuns"]', state.meta.totalRuns);
 }
 
-// ====== KPI обновление из данных ======
 function updateKpis() {
   if (state.runs.length === 0) return;
-
-  // Здесь можно динамически обновлять числа из данных
-  // Пока оставляем статические значения из ВКР, они корректнее любых расчётов из частичных данных
 }
 
-// ====== Запуск ======
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initNav();
